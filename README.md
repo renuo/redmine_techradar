@@ -1,8 +1,6 @@
-# Redmine Autolinks
+# Redmine Tech Radar
 
-Create custom references to external tickets.
-
-## Usage
+Adds a Tech Radar to Redmine, allowing teams to visualize and manage their preferred technology stack.
 
 ### Setup
 
