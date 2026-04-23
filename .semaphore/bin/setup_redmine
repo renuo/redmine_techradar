@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd ~
+cache restore redmine-$REDMINE_VERSION
+if [ "$REDMINE_VERSION" = "master" ]; then
+  REDMINE_BRANCH="master"
+else
+  REDMINE_BRANCH="$REDMINE_VERSION-stable"
+fi
+if [ ! -d ~/redmine ]; then git clone -b $REDMINE_BRANCH https://github.com/redmine/redmine.git; fi
+cache store redmine-$REDMINE_VERSION ~/redmine
+cd ~/redmine
+cp ~/redmine_techradar/.semaphore/database_postgres.yml config/database.yml
+cache restore gems-redmine-$SEMAPHORE_DATABASE_ADAPTER-$REDMINE_VERSION-$RUBY_VERSION
+bundle install --path ~/vendor/redmine-bundle
+cache store gems-redmine-$SEMAPHORE_DATABASE_ADAPTER-$REDMINE_VERSION-$RUBY_VERSION ~/vendor/redmine-bundle
+bundle exec rake db:create db:migrate db:seed

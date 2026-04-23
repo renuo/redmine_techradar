@@ -1,0 +1,49 @@
+version: v1.0
+name: redmine_techradar
+agent:
+  machine:
+    type: f1-standard-4
+    os_image: ubuntu2404
+
+global_job_config:
+  env_vars:
+    - name: RAILS_ENV
+      value: test
+    - name: SEMAPHORE_CI
+      value: "true"
+    - name: DATABASE_ADAPTER
+      value: "postgresql"
+    - name: SEMAPHORE_DATABASE_ADAPTER
+      value: "postgres"
+    - name: REDMINE_VERSION
+      value: "6.1"
+    - name: RUBY_VERSION
+      value: "3.4.1"
+
+blocks:
+  - name: Redmine 6.1
+    dependencies: []
+    execution_time_limit:
+      minutes: 5
+    task:
+      jobs:
+        - name: checks
+          commands:
+            - sem-version ruby $RUBY_VERSION -f
+            - sem-service start postgres
+            - checkout --use-cache
+            - ~/redmine_techradar/.semaphore/bin/setup_redmine
+            - ~/redmine_techradar/.semaphore/bin/setup_redmine_techradar
+            - cd ~/redmine/plugins/redmine_techradar
+            - CI=true bundle exec rake redmine_techradar:check
+
+      epilogue:
+        always:
+          commands:
+            - cd ~/redmine/plugins/redmine_techradar
+            - mkdir -p log coverage tmp/screenshots tmp/capybara
+            - artifact push job log
+            - artifact push job tmp/screenshots
+            - artifact push job tmp/capybara
+            - zip -r coverage-$SEMAPHORE_GIT_SHA coverage/
+            - artifact push job coverage-$SEMAPHORE_GIT_SHA.zip

@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch 'RAILS_THREADS', 10 %>
+  username: postgres
+  password: ""
+
+production:
+  <<: *default
+  database: redmine
+
+development:
+  <<: *default
+  database: redmine_development
+
+test:
+  <<: *default
+  database: redmine_test

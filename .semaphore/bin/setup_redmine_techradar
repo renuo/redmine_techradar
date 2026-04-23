@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mv ~/redmine_techradar ~/redmine/plugins
+cd ~/redmine
+bundle exec rake redmine:plugins:migrate
