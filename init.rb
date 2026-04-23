@@ -1,8 +1,8 @@
 Redmine::Plugin.register :redmine_techradar do
   name 'Redmine Techradar plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
+  author 'Brendan Minder'
+  description 'A Techradar plugin for Redmine'
   version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  url 'https://github.com/renuo/redmine_techradar'
+  author_url 'https://github.com/ddbrendan'
 end
