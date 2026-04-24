@@ -3,5 +3,9 @@
 set -euo pipefail
 
 mv ~/redmine_techradar ~/redmine/plugins
+cd ~/redmine/plugins/redmine_techradar
+cache restore gems-redmine_techradar-$SEMAPHORE_DATABASE_ADAPTER-$REDMINE_VERSION-$RUBY_VERSION-$(checksum PluginGemfile)
+(cd ~/redmine && bundle install --path ~/vendor/redmine-bundle)
+cache store gems-redmine_techradar-$SEMAPHORE_DATABASE_ADAPTER-$REDMINE_VERSION-$RUBY_VERSION-$(checksum PluginGemfile) ~/vendor/redmine-bundle
 cd ~/redmine
 bundle exec rake redmine:plugins:migrate

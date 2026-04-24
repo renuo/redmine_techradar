@@ -1,0 +1,14 @@
+inherit_from:
+  - ../../.rubocop.yml
+
+plugins:
+  - rubocop-minitest
+
+inherit_mode:
+  override:
+    - Exclude
+
+AllCops:
+  TargetRubyVersion: 3.4
+  Exclude:
+    - 'db/migrate/**/*'
