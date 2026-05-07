@@ -7,8 +7,8 @@ module TechRadar
     belongs_to :user
     belongs_to :technology
 
-    enum :can_level,  { unknown: 0, beginner: 1, advanced: 2, professional: 3 }
-    enum :want_level, { no: 0, probably_no: 1, neutral: 2, probably_yes: 3, yes: 4 }
+    enum :can_level,  { unknown: 1, beginner: 2, advanced: 3, professional: 4 }
+    enum :want_level, { no: 1, probably_no: 2, neutral: 3, probably_yes: 4, yes: 5 }
 
     validates :user_id, uniqueness: { scope: :technology_id }
   end
