@@ -12,4 +12,4 @@ SimpleCov.start do
   minimum_coverage line: 100, branch: 100
 end
 
-require File.expand_path('../../../../test/test_helper', __FILE__)
+require File.expand_path('../../../test/test_helper', __dir__)
