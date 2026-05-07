@@ -10,5 +10,6 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 3.4
+  SuggestExtensions: false
   Exclude:
     - 'db/migrate/**/*'
