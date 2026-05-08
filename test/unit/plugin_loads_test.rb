@@ -11,6 +11,14 @@ class PluginLoadsTest < ActiveSupport::TestCase
     assert TechRadar::Rating
   end
 
+  test 'Technology table name uses TechRadar prefix' do
+    assert_equal 'tech_radar_technologies', TechRadar::Technology.table_name
+  end
+
+  test 'Rating table name uses TechRadar prefix' do
+    assert_equal 'tech_radar_ratings', TechRadar::Rating.table_name
+  end
+
   test 'TechRadarController loads' do
     assert TechRadarController
   end

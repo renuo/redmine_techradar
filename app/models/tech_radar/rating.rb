@@ -2,8 +2,6 @@
 
 module TechRadar
   class Rating < ApplicationRecord
-    self.table_name = 'tech_radar_ratings'
-
     belongs_to :user
     belongs_to :technology
 
