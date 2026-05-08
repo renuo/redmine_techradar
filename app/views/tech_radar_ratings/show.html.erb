@@ -8,10 +8,10 @@
     <%= form_with url: tech_radar_rating_path, method: :patch,
                   data: { rating_card_target: 'form' } do |f| %>
       <%= f.hidden_field 'rating[can_level]',
-                         value: @rating&.can_level,
+                         value: '',
                          data: { rating_card_target: 'canField' } %>
       <%= f.hidden_field 'rating[want_level]',
-                         value: @rating&.want_level,
+                         value: '',
                          data: { rating_card_target: 'wantField' } %>
 
       <fieldset class="tech-radar-card-can">
