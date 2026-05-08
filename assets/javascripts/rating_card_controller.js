@@ -5,8 +5,6 @@ export default class extends Controller {
   static values = { canLevel: String, wantLevel: String }
 
   connect() {
-    this.canLevelValue = this.canFieldTarget.value || this.canLevelValue
-    this.wantLevelValue = this.wantFieldTarget.value || this.wantLevelValue
     this.stage = 'can'
     this.boundKeydown = this.handleKeydown.bind(this)
     document.addEventListener('keydown', this.boundKeydown)
