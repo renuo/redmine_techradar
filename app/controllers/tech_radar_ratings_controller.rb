@@ -1,19 +1,42 @@
 # frozen_string_literal: true
 
 class TechRadarRatingsController < ApplicationController
+  before_action :require_login
+  before_action :authorize_global
+
   def show
-    # TODO: present the next technology awaiting a rating
+    @technology = deck.current_card
+    @rating = deck.current_rating
   end
 
   def update
-    # TODO: persist the submitted rating and advance
+    can_level = params.dig(:rating, :can_level)
+    want_level = params.dig(:rating, :want_level)
+
+    unless TechRadar::Rating.can_levels.key?(can_level) &&
+           TechRadar::Rating.want_levels.key?(want_level)
+      head :unprocessable_entity
+      return
+    end
+
+    deck.record!(can_level, want_level)
+    deck.advance!
+    redirect_to tech_radar_rating_path
   end
 
   def skip
-    # TODO: skip the current technology without rating
+    deck.advance!
+    redirect_to tech_radar_rating_path
   end
 
   def back
-    # TODO: return to the previously rated technology
+    deck.retreat!
+    redirect_to tech_radar_rating_path
+  end
+
+  private
+
+  def deck
+    @deck ||= TechRadar::CardDeck.new(User.current, session[:tech_radar_rate] ||= {})
   end
 end
