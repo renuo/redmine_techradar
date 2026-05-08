@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require File.expand_path('lib/redmine_techradar/hooks', __dir__)
+
+plugin_importmap = File.expand_path('config/importmap.rb', __dir__)
+Rails.application.config.importmap.paths << plugin_importmap
+Rails.application.importmap.draw(plugin_importmap)
+
 Redmine::Plugin.register :redmine_techradar do
   name 'Redmine Techradar plugin'
   author 'Brendan Minder'

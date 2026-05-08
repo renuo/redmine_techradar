@@ -1,37 +1,54 @@
 <% if @technology %>
-  <div class="tech-radar-card">
+  <div class="tech-radar-card"
+       data-controller="rating-card"
+       data-rating-card-can-level-value="<%= @rating&.can_level %>"
+       data-rating-card-want-level-value="<%= @rating&.want_level %>">
     <h2><%= @technology.name %></h2>
 
-    <%= form_with url: tech_radar_rating_path, method: :patch do |f| %>
+    <%= form_with url: tech_radar_rating_path, method: :patch,
+                  data: { rating_card_target: 'form' } do |f| %>
+      <%= f.hidden_field 'rating[can_level]',
+                         value: @rating&.can_level,
+                         data: { rating_card_target: 'canField' } %>
+      <%= f.hidden_field 'rating[want_level]',
+                         value: @rating&.want_level,
+                         data: { rating_card_target: 'wantField' } %>
+
       <fieldset class="tech-radar-card-can">
         <legend><%= t('tech_radar.rate.can_label') %></legend>
-        <% TechRadar::Rating.can_levels.each_key do |key| %>
-          <label>
-            <%= f.radio_button 'rating[can_level]', key,
-                               checked: @rating&.can_level == key %>
-            <%= t("tech_radar.rate.can.#{key}") %>
-          </label>
+        <% TechRadar::Rating.can_levels.each_key.with_index(1) do |key, i| %>
+          <button type="button"
+                  data-action="click->rating-card#selectCan"
+                  data-rating-card-target="canButton"
+                  data-level="<%= key %>">
+            <%= "#{i}. #{t("tech_radar.rate.can.#{key}")}" %>
+          </button>
         <% end %>
       </fieldset>
 
       <fieldset class="tech-radar-card-want">
         <legend><%= t('tech_radar.rate.want_label') %></legend>
-        <% TechRadar::Rating.want_levels.each_key do |key| %>
-          <label>
-            <%= f.radio_button 'rating[want_level]', key,
-                               checked: @rating&.want_level == key %>
-            <%= t("tech_radar.rate.want.#{key}") %>
-          </label>
+        <% TechRadar::Rating.want_levels.each_key.with_index(1) do |key, i| %>
+          <button type="button"
+                  data-action="click->rating-card#selectWant"
+                  data-rating-card-target="wantButton"
+                  data-level="<%= key %>">
+            <%= "#{i}. #{t("tech_radar.rate.want.#{key}")}" %>
+          </button>
         <% end %>
       </fieldset>
 
-      <%= f.submit t('tech_radar.rate.save'), name: 'commit' %>
+      <noscript>
+        <%= f.submit t('tech_radar.rate.save'), name: 'commit' %>
+      </noscript>
     <% end %>
 
     <%= button_to t('tech_radar.rate.skip'),
-                  skip_tech_radar_rating_path, method: :post %>
+                  skip_tech_radar_rating_path, method: :post,
+                  data: { rating_card_target: 'skip' } %>
     <%= button_to t('tech_radar.rate.back'),
-                  back_tech_radar_rating_path, method: :post %>
+                  back_tech_radar_rating_path, method: :post,
+                  data: { rating_card_target: 'back' } %>
   </div>
 <% else %>
   <div class="tech-radar-card-done">
