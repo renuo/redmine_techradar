@@ -11,3 +11,13 @@ ROLE_PERMISSIONS.each do |name, permissions|
     role.assignable = true
   end
 end
+
+SAMPLE_TECHNOLOGIES = [
+  'Ruby', 'Ruby on Rails', 'PostgreSQL', 'Redis', 'Stimulus',
+  'Hotwire Turbo', 'TypeScript', 'React', 'Tailwind CSS',
+  'Docker', 'Kubernetes', 'Terraform', 'GraphQL', 'gRPC'
+].freeze
+
+SAMPLE_TECHNOLOGIES.each do |name|
+  TechRadar::Technology.find_or_create_by!(name: name)
+end
