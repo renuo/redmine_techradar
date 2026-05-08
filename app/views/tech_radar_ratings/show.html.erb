@@ -4,35 +4,37 @@
 
     <%= form_with url: tech_radar_rating_path, method: :patch do |f| %>
       <fieldset class="tech-radar-card-can">
-        <legend>Can</legend>
+        <legend><%= t('tech_radar.rate.can_label') %></legend>
         <% TechRadar::Rating.can_levels.each_key do |key| %>
           <label>
             <%= f.radio_button 'rating[can_level]', key,
                                checked: @rating&.can_level == key %>
-            <%= key.humanize %>
+            <%= t("tech_radar.rate.can.#{key}") %>
           </label>
         <% end %>
       </fieldset>
 
       <fieldset class="tech-radar-card-want">
-        <legend>Want</legend>
+        <legend><%= t('tech_radar.rate.want_label') %></legend>
         <% TechRadar::Rating.want_levels.each_key do |key| %>
           <label>
             <%= f.radio_button 'rating[want_level]', key,
                                checked: @rating&.want_level == key %>
-            <%= key.humanize %>
+            <%= t("tech_radar.rate.want.#{key}") %>
           </label>
         <% end %>
       </fieldset>
 
-      <%= f.submit 'Save', name: 'commit' %>
+      <%= f.submit t('tech_radar.rate.save'), name: 'commit' %>
     <% end %>
 
-    <%= button_to 'Skip', skip_tech_radar_rating_path, method: :post %>
-    <%= button_to 'Back', back_tech_radar_rating_path, method: :post %>
+    <%= button_to t('tech_radar.rate.skip'),
+                  skip_tech_radar_rating_path, method: :post %>
+    <%= button_to t('tech_radar.rate.back'),
+                  back_tech_radar_rating_path, method: :post %>
   </div>
 <% else %>
   <div class="tech-radar-card-done">
-    <p>You've rated every technology. Thanks!</p>
+    <p><%= t('tech_radar.rate.all_rated') %></p>
   </div>
 <% end %>
