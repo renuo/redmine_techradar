@@ -22,4 +22,9 @@ Redmine::Plugin.register :redmine_techradar do
              { tech_radar_ratings: [:show, :update, :skip, :back] },
              global: true,
              require: :loggedin
+
+  menu :top_menu, :tech_radar_rate,
+       { controller: 'tech_radar_ratings', action: 'show' },
+       caption: :label_tech_radar_rate,
+       if: ->(_) { User.current.allowed_to?(:rate_technologies, nil, global: true) }
 end
