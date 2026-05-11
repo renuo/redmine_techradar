@@ -1,0 +1,4 @@
+<% if controller_path.start_with?('tech_radar') %>
+  <%= stylesheet_link_tag 'tech_radar', plugin: 'redmine_techradar' %>
+  <%= javascript_import_module_tag 'redmine_techradar/application' %>
+<% end %>

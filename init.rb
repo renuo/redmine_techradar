@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require File.expand_path('lib/redmine_techradar/hooks', __dir__)
+
+plugin_importmap = File.expand_path('config/importmap.rb', __dir__)
+Rails.application.config.importmap.paths << plugin_importmap
+Rails.application.importmap.draw(plugin_importmap)
+
 Redmine::Plugin.register :redmine_techradar do
   name 'Redmine Techradar plugin'
   author 'Brendan Minder'
@@ -16,4 +22,9 @@ Redmine::Plugin.register :redmine_techradar do
              { tech_radar_ratings: [:show, :update, :skip, :back] },
              global: true,
              require: :loggedin
+
+  menu :top_menu, :tech_radar_rate,
+       { controller: 'tech_radar_ratings', action: 'show' },
+       caption: :label_tech_radar_rate,
+       if: ->(_) { User.current.allowed_to?(:rate_technologies, nil, global: true) }
 end

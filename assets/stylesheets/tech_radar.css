@@ -1,0 +1,10 @@
+.tech-radar-card button[data-level].previous {
+  border: 2px dashed #6090c0;
+  background: #f0f6fc;
+}
+
+.tech-radar-card button[data-level].selected {
+  border: 2px solid #2a8a4a;
+  background: #d6f5e0;
+  font-weight: bold;
+}
