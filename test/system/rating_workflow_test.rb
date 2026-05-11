@@ -8,6 +8,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
 
   def setup
     super
+    @user = User.find_by(login: 'admin')
     @t1 = TechRadar::Technology.create!(name: 'Ruby')
     @t2 = TechRadar::Technology.create!(name: 'Rails')
   end
@@ -28,7 +29,19 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button '5. Yes'
 
     assert_selector 'h2', text: 'Rails'
-    assert_equal({ can_level: 'advanced', want_level: 'yes' }, ruby_rating_values)
+    assert_equal [{ can_level: 'advanced', want_level: 'yes' }], rating_values_for(@t1)
+  end
+
+  def test_rate_via_keyboard_persists_and_advances
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+
+    assert_selector 'h2', text: 'Ruby'
+    find('body').send_keys('3', '5')
+
+    assert_selector 'h2', text: 'Rails'
+    assert_equal [{ can_level: 'advanced', want_level: 'yes' }], rating_values_for(@t1)
   end
 
   def test_skip_advances_without_persisting
@@ -40,7 +53,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Skip'
 
     assert_selector 'h2', text: 'Rails'
-    assert_nil TechRadar::Rating.find_by(user_id: 1, technology: @t1)
+    assert_empty rating_values_for(@t1)
   end
 
   def test_back_then_re_rate_keeps_one_row_with_new_values
@@ -55,21 +68,32 @@ class RatingWorkflowTest < ApplicationSystemTestCase
 
     assert_selector 'h2', text: 'Ruby'
     assert_selector 'button.selected[data-level="beginner"]'
-	assert_selector 'button.selected[data-level="no"]'
+    assert_selector 'button.selected[data-level="no"]'
+
     click_button '4. Professional'
     click_button '5. Yes'
 
-    expected = [{ can_level: 'professional', want_level: 'yes' }]
-    actual = TechRadar::Rating.where(user_id: 1, technology: @t1)
-                              .map { |r| r.slice(:can_level, :want_level).symbolize_keys }
+    assert_equal [{ can_level: 'professional', want_level: 'yes' }], rating_values_for(@t1)
+  end
 
-    assert_equal expected, actual
+  def test_done_view_shown_after_all_technologies_rated
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+    click_button '3. Advanced'
+    click_button '5. Yes'
+
+    assert_selector 'h2', text: 'Rails'
+    click_button '3. Advanced'
+    click_button '5. Yes'
+
+    assert_selector '.tech-radar-card-done', text: /rated every technology/i
   end
 
   private
 
-  def ruby_rating_values
-    rating = TechRadar::Rating.find_by(user_id: 1, technology: @t1)
-    rating&.slice(:can_level, :want_level)&.symbolize_keys
+  def rating_values_for(technology)
+    TechRadar::Rating.where(user: @user, technology: technology)
+                     .map { |r| r.slice(:can_level, :want_level).symbolize_keys }
   end
 end
