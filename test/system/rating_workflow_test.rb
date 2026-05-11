@@ -18,7 +18,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     super
   end
 
-  def test_t1_rate_via_click_persists_and_advances
+  def test_rate_via_click_persists_and_advances
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
@@ -31,7 +31,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     assert_equal({ can_level: 'advanced', want_level: 'yes' }, ruby_rating_values)
   end
 
-  def test_t2_skip_advances_without_persisting
+  def test_skip_advances_without_persisting
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
@@ -43,7 +43,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     assert_nil TechRadar::Rating.find_by(user_id: 1, technology: @t1)
   end
 
-  def test_t3_back_then_re_rate_keeps_one_row_with_new_values
+  def test_back_then_re_rate_keeps_one_row_with_new_values
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
