@@ -56,7 +56,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     assert_empty rating_values_for(@t1)
   end
 
-  def test_back_then_re_rate_keeps_one_row_with_new_values
+  def test_back_shows_previously_chosen_rating
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
@@ -67,9 +67,20 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Back'
 
     assert_selector 'h2', text: 'Ruby'
-    assert_selector 'button.selected[data-level="beginner"]'
-    assert_selector 'button.selected[data-level="no"]'
+    assert_equal %w[beginner no], all('button.selected').pluck('data-level').sort
+  end
 
+  def test_re_rate_after_back_keeps_one_row_with_new_values
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+    click_button '2. Beginner'
+    click_button '1. No'
+
+    assert_selector 'h2', text: 'Rails'
+    click_button 'Back'
+
+    assert_selector 'h2', text: 'Ruby'
     click_button '4. Professional'
     click_button '5. Yes'
 
