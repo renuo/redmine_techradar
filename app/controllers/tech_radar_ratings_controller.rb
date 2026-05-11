@@ -15,8 +15,7 @@ class TechRadarRatingsController < ApplicationController
 
     unless TechRadar::Rating.can_levels.key?(can_level) &&
            TechRadar::Rating.want_levels.key?(want_level)
-      head :unprocessable_entity
-      return
+      return head :unprocessable_entity
     end
 
     deck.record!(can_level, want_level)
@@ -37,6 +36,7 @@ class TechRadarRatingsController < ApplicationController
   private
 
   def deck
-    @deck ||= TechRadar::CardDeck.new(User.current, session[:tech_radar_rate] ||= {})
+    session[:tech_radar_rate] ||= {}
+    @deck ||= TechRadar::CardDeck.new(User.current, session[:tech_radar_rate])
   end
 end
