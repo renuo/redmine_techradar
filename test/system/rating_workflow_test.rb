@@ -54,6 +54,8 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Back'
 
     assert_selector 'h2', text: 'Ruby'
+    assert_selector 'button.selected[data-level="beginner"]'
+	assert_selector 'button.selected[data-level="no"]'
     click_button '4. Professional'
     click_button '5. Yes'
 
