@@ -81,6 +81,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Back'
 
     assert_selector 'h2', text: 'Ruby'
+    find('button.previous', match: :first) # wait for Stimulus to settle before next click
     click_button '4. Professional'
     click_button '5. Yes'
 
