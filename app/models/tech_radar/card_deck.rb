@@ -2,17 +2,50 @@
 
 module TechRadar
   class CardDeck
-    HISTORY_KEY = :history
-    POSITION_KEY = :position
-
     def initialize(user, state)
       @user = user
       @state = state
-      @state[HISTORY_KEY] ||= []
-      @state[POSITION_KEY] ||= 0
+      @state[:history] ||= []
+      @state[:position] ||= 0
     end
 
     def current_card
+      @current_card ||= load_current_card
+    end
+
+    def current_rating
+      return nil unless current_card
+
+      Rating.find_by(user: @user, technology: current_card)
+    end
+
+    def advance!
+      @state[:position] = position + 1
+      @current_card = nil
+    end
+
+    def retreat!
+      @state[:position] = [position - 1, 0].max
+      @current_card = nil
+    end
+
+    def record!(can_level, want_level)
+      return nil unless current_card
+
+      rating = Rating.find_or_initialize_by(user: @user, technology: current_card)
+      rating.can_level = can_level
+      rating.want_level = want_level
+      rating.save!
+      rating
+    end
+
+    def done?
+      current_card.nil?
+    end
+
+    private
+
+    def load_current_card
       while position < history.length
         technology = Technology.find_by(id: history[position])
         return technology if technology
@@ -27,44 +60,12 @@ module TechRadar
       next_unrated
     end
 
-    def current_rating
-      technology = current_card
-      return nil unless technology
-
-      Rating.find_by(user: @user, technology: technology)
-    end
-
-    def advance!
-      @state[POSITION_KEY] = position + 1
-    end
-
-    def retreat!
-      @state[POSITION_KEY] = [position - 1, 0].max
-    end
-
-    def record!(can_level, want_level)
-      technology = current_card
-      return nil unless technology
-
-      rating = Rating.find_or_initialize_by(user: @user, technology: technology)
-      rating.can_level = can_level
-      rating.want_level = want_level
-      rating.save!
-      rating
-    end
-
-    def done?
-      current_card.nil?
-    end
-
-    private
-
     def history
-      @state[HISTORY_KEY]
+      @state[:history]
     end
 
     def position
-      @state[POSITION_KEY]
+      @state[:position]
     end
 
     def rated_technology_ids
