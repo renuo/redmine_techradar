@@ -13,9 +13,9 @@ en:
         professional: "Professional"
       want:
         "no": "No"
-        probably_no: "Probably no"
+        probably_no: "Rather no"
         neutral: "Neutral"
-        probably_yes: "Probably yes"
+        probably_yes: "Rather yes"
         "yes": "Yes"
       skip: "Skip"
       back: "Back"
