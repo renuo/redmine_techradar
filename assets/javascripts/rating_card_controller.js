@@ -2,7 +2,12 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
   static targets = ['form', 'canField', 'wantField', 'canButton', 'wantButton', 'skip', 'back']
-  static values = { canLevel: String, wantLevel: String }
+  static values = {
+    canLevel: String,
+    wantLevel: String,
+    previousCanLevel: String,
+    previousWantLevel: String
+  }
 
   connect() {
     this.stage = 'can'
@@ -42,9 +47,11 @@ export default class extends Controller {
 
   refreshHighlights() {
     this.canButtonTargets.forEach((btn) => {
+      btn.classList.toggle('previous', btn.dataset.level === this.previousCanLevelValue)
       btn.classList.toggle('selected', btn.dataset.level === this.canLevelValue)
     })
     this.wantButtonTargets.forEach((btn) => {
+      btn.classList.toggle('previous', btn.dataset.level === this.previousWantLevelValue)
       btn.classList.toggle('selected', btn.dataset.level === this.wantLevelValue)
     })
   }

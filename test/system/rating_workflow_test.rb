@@ -67,7 +67,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Back'
 
     assert_selector 'h2', text: 'Ruby'
-    assert_equal %w[beginner no], all('button.selected').pluck('data-level').sort
+    assert_equal %w[beginner no], all('button.previous').pluck('data-level').sort
   end
 
   def test_re_rate_after_back_keeps_one_row_with_new_values

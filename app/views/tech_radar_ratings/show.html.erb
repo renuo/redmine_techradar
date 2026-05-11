@@ -1,8 +1,8 @@
 <% if @technology %>
   <div class="tech-radar-card"
        data-controller="rating-card"
-       data-rating-card-can-level-value="<%= @rating&.can_level %>"
-       data-rating-card-want-level-value="<%= @rating&.want_level %>">
+       data-rating-card-previous-can-level-value="<%= @rating&.can_level %>"
+       data-rating-card-previous-want-level-value="<%= @rating&.want_level %>">
     <h2><%= @technology.name %></h2>
 
     <%= form_with url: tech_radar_rating_path, method: :patch,
