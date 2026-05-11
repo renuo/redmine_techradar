@@ -81,9 +81,10 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button 'Back'
 
     assert_selector 'h2', text: 'Ruby'
-    find('button.previous', match: :first) # wait for Stimulus to settle before next click
+    find('button.previous', match: :first) # ensure Stimulus has applied .previous before clicking
     click_button '4. Professional'
     click_button '5. Yes'
+    find('h2', text: 'Rails') # wait for the re-rate submission to persist
 
     assert_equal [{ can_level: 'professional', want_level: 'yes' }], rating_values_for(@t1)
   end
