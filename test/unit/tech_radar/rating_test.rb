@@ -25,18 +25,14 @@ module TechRadar
     def test_centroids_by_technology_uses_single_rating_as_its_own_centroid
       Rating.create!(user: @user1, technology: @ruby, can_level: :advanced, want_level: :yes)
 
-      assert_equal [{ id: @ruby.id, name: 'Ruby', can: 3.0, want: 5.0 }],
-                   Rating.centroids_by_technology
+      assert_equal [{ name: 'Ruby', can: 3.0, want: 5.0 }], Rating.centroids_by_technology
     end
 
     def test_centroids_by_technology_averages_multiple_ratings_per_technology
       Rating.create!(user: @user1, technology: @ruby, can_level: :advanced, want_level: :yes)
       Rating.create!(user: @user2, technology: @ruby, can_level: :professional, want_level: :probably_yes)
 
-      centroid = Rating.centroids_by_technology.find { |c| c[:id] == @ruby.id }
-
-      assert_in_delta 3.5, centroid[:can]
-      assert_in_delta 4.5, centroid[:want]
+      assert_equal [{ name: 'Ruby', can: 3.5, want: 4.5 }], Rating.centroids_by_technology
     end
 
     def test_centroids_by_technology_returns_one_entry_per_rated_technology
