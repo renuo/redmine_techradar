@@ -47,10 +47,7 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
     points = JSON.parse(canvas['data-scatter-chart-points-value'])
 
-    assert_equal 1, points.length
-    assert_equal 'Ruby', points.first['name']
-    assert_in_delta 3.5, points.first['can'], 0.0001
-    assert_in_delta 4.5, points.first['want'], 0.0001
+    assert_equal [{ 'id' => @ruby.id, 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
   end
 
   def test_index_redirects_anonymous_user_to_login
