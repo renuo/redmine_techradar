@@ -12,14 +12,13 @@ module TechRadar
 
     def self.centroids_by_technology
       joins(:technology)
-        .group('tech_radar_technologies.id', 'tech_radar_technologies.name')
+        .group('tech_radar_technologies.name')
         .pluck(
-          'tech_radar_technologies.id',
           'tech_radar_technologies.name',
           Arel.sql('AVG(can_level)'),
           Arel.sql('AVG(want_level)')
         )
-        .map { |id, name, can, want| { id: id, name: name, can: can.to_f, want: want.to_f } }
+        .map { |name, can, want| { name: name, can: can.to_f, want: want.to_f } }
     end
   end
 end
