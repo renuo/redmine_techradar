@@ -1,0 +1,12 @@
+<ul class="tech-radar-nav">
+  <% if User.current.allowed_to?(:view_tech_radar, nil, global: true) %>
+    <li class="<%= 'active' if current_page?(tech_radar_path) %>">
+      <%= link_to t('tech_radar.nav.evaluation'), tech_radar_path %>
+    </li>
+  <% end %>
+  <% if User.current.allowed_to?(:rate_technologies, nil, global: true) %>
+    <li class="<%= 'active' if current_page?(tech_radar_rating_path) %>">
+      <%= link_to t('tech_radar.nav.rate'), tech_radar_rating_path %>
+    </li>
+  <% end %>
+</ul>

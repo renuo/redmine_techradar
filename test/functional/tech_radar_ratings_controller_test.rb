@@ -21,6 +21,13 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     assert_select 'h2', text: 'Ruby'
   end
 
+  def test_show_renders_nav_with_rate_marked_active
+    get :show
+
+    assert_select 'ul.tech-radar-nav li.active a', text: 'Rate'
+    assert_select 'ul.tech-radar-nav li:not(.active) a', text: 'Evaluation'
+  end
+
   def test_show_renders_done_message_when_all_rated
     [@t1, @t2].each do |t|
       TechRadar::Rating.create!(user_id: 1, technology: t,
