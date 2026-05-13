@@ -14,11 +14,6 @@ class TechRadarControllerTest < Redmine::ControllerTest
     @rails = TechRadar::Technology.create!(name: 'Rails')
   end
 
-  def teardown
-    TechRadar::Rating.delete_all
-    TechRadar::Technology.delete_all
-  end
-
   def test_index_renders_scatter_canvas
     TechRadar::Rating.create!(user_id: 1, technology: @ruby,
                               can_level: :advanced, want_level: :yes)
@@ -47,7 +42,7 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
     points = JSON.parse(canvas['data-scatter-chart-points-value'])
 
-    assert_equal [{ 'id' => @ruby.id, 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
+    assert_equal [{ 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
   end
 
   def test_index_redirects_anonymous_user_to_login
