@@ -1,0 +1,10 @@
+<%= render 'tech_radar/nav' %>
+
+<h2><%= t('tech_radar.evaluation.title') %></h2>
+
+<div class="tech-radar-evaluation">
+  <canvas data-controller="scatter-chart"
+          data-scatter-chart-points-value="<%= @centroids.to_json %>"
+          data-scatter-chart-can-label-value="<%= t('tech_radar.evaluation.can_axis') %>"
+          data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"></canvas>
+</div>
