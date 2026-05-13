@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class TechRadarController < ApplicationController
+  before_action :require_login
+  before_action :authorize_global
+
   def index
-    # TODO: render the radar
+    @centroids = TechRadar::Rating.centroids_by_technology
   end
 end
