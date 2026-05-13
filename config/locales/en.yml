@@ -7,7 +7,6 @@ en:
       evaluation: "Evaluation"
       rate: "Rate"
     evaluation:
-      title: "Tech Radar"
       can_axis: "Can"
       want_axis: "Want"
     rate:
