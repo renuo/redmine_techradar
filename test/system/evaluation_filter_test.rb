@@ -45,6 +45,24 @@ class EvaluationFilterTest < ApplicationSystemTestCase
     assert_current_path(/user_id=#{@admin.id}/)
   end
 
+  def test_filtering_by_technology_shows_one_point_per_rater
+    log_user('admin', 'admin')
+    visit '/tech_radar'
+
+    select 'Ruby', from: 'technology_id'
+
+    assert_chart_labels %w[admin jsmith]
+  end
+
+  def test_technology_filter_selection_appears_in_url
+    log_user('admin', 'admin')
+    visit '/tech_radar'
+
+    select 'Ruby', from: 'technology_id'
+
+    assert_current_path(/technology_id=#{@ruby.id}/)
+  end
+
   private
 
   def assert_chart_labels(expected)

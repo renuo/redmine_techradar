@@ -10,6 +10,14 @@
                onchange: 'this.form.requestSubmit()' %>
 <% end %>
 
+<%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
+  <%= f.label :technology_id, t('tech_radar.evaluation.filter.technology_label') %>
+  <%= f.select :technology_id,
+               @technologies.pluck(:name, :id),
+               { include_blank: t('tech_radar.evaluation.filter.all_technologies'), selected: @technology_id },
+               onchange: 'this.form.requestSubmit()' %>
+<% end %>
+
 <div class="tech-radar-evaluation">
   <canvas data-controller="scatter-chart"
           data-scatter-chart-points-value="<%= @points.to_json %>"
