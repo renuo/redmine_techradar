@@ -54,4 +54,55 @@ class TechRadarControllerTest < Redmine::ControllerTest
 
     assert_redirected_to %r{/login}
   end
+
+  def test_index_with_user_id_serialises_only_that_users_points
+    TechRadar::Rating.create!(user: @admin,  technology: @ruby,
+                              can_level: :advanced, want_level: :yes)
+    TechRadar::Rating.create!(user: @jsmith, technology: @ruby,
+                              can_level: :beginner, want_level: :neutral)
+
+    get :index, params: { user_id: @admin.id }
+
+    canvas = css_select('canvas[data-controller="scatter-chart"]').first
+    points = JSON.parse(canvas['data-scatter-chart-points-value'])
+
+    assert_equal [{ 'name' => 'Ruby', 'can' => 3.0, 'want' => 5.0 }], points
+  end
+
+  def test_index_filter_dropdown_lists_only_users_with_ratings
+    TechRadar::Rating.create!(user: @admin, technology: @ruby,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index
+
+    options = css_select('select[name="user_id"] option').pluck('value')
+
+    assert_includes options, @admin.id.to_s
+    assert_not_includes options, @jsmith.id.to_s
+  end
+
+  def test_index_filter_dropdown_marks_selected_user_id
+    TechRadar::Rating.create!(user: @admin, technology: @ruby,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index, params: { user_id: @admin.id }
+
+    selected = css_select('select[name="user_id"] option[selected]').first
+
+    assert_equal @admin.id.to_s, selected['value']
+  end
+
+  def test_index_with_unknown_user_id_falls_back_to_centroids
+    TechRadar::Rating.create!(user: @admin,  technology: @ruby,
+                              can_level: :advanced,    want_level: :yes)
+    TechRadar::Rating.create!(user: @jsmith, technology: @ruby,
+                              can_level: :professional, want_level: :probably_yes)
+
+    get :index, params: { user_id: 999_999 }
+
+    canvas = css_select('canvas[data-controller="scatter-chart"]').first
+    points = JSON.parse(canvas['data-scatter-chart-points-value'])
+
+    assert_equal [{ 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
+  end
 end
