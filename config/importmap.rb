@@ -9,9 +9,6 @@ pin 'redmine_techradar/rating_card_controller',
 pin 'redmine_techradar/scatter_chart_controller',
     to: 'plugin_assets/redmine_techradar/scatter_chart_controller.js',
     preload: true
-pin 'redmine_techradar/radar_filter_controller',
-    to: 'plugin_assets/redmine_techradar/radar_filter_controller.js',
-    preload: true
 
 pin 'chart.js/auto',
     to: 'https://ga.jspm.io/npm:chart.js@4.5.1/auto/auto.js'
