@@ -7,11 +7,7 @@ class TechRadarController < ApplicationController
   def index
     @users = TechRadar::Rating.users_with_ratings
     @user_id = params[:user_id].presence&.to_i
-    @points = if @user_id && @users.exists?(id: @user_id)
-                TechRadar::Rating.points_for_user(@user_id)
-              else
-                @user_id = nil
-                TechRadar::Rating.centroids_by_technology
-              end
+    @user_id = nil unless @user_id && @users.exists?(id: @user_id)
+    @points = @user_id ? TechRadar::Rating.points_for_user(@user_id) : TechRadar::Rating.centroids_by_technology
   end
 end
