@@ -2,9 +2,17 @@
 
 <h2><%= t('label_tech_radar') %></h2>
 
+<%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
+  <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
+  <%= f.select :user_id,
+               @users.pluck(:login, :id),
+               { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
+               onchange: 'this.form.requestSubmit()' %>
+<% end %>
+
 <div class="tech-radar-evaluation">
   <canvas data-controller="scatter-chart"
-          data-scatter-chart-points-value="<%= @centroids.to_json %>"
+          data-scatter-chart-points-value="<%= @points.to_json %>"
           data-scatter-chart-can-label-value="<%= t('tech_radar.evaluation.can_axis') %>"
           data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"></canvas>
 </div>
