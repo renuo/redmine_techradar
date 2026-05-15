@@ -9,6 +9,9 @@ en:
     evaluation:
       can_axis: "Can"
       want_axis: "Want"
+      filter:
+        user_label: "Person"
+        all_users: "All people"
     rate:
       can_label: "How well do you know it?"
       want_label: "Do you want to work with it?"
