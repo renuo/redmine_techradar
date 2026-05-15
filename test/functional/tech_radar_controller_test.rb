@@ -9,13 +9,15 @@ class TechRadarControllerTest < Redmine::ControllerTest
 
   def setup
     User.current = nil
-    @request.session[:user_id] = 1
+    @admin = User.find_by(login: 'admin')
+    @jsmith = User.find_by(login: 'jsmith')
+    @request.session[:user_id] = @admin.id
     @ruby = TechRadar::Technology.create!(name: 'Ruby')
     @rails = TechRadar::Technology.create!(name: 'Rails')
   end
 
   def test_index_renders_scatter_canvas
-    TechRadar::Rating.create!(user_id: 1, technology: @ruby,
+    TechRadar::Rating.create!(user: @admin, technology: @ruby,
                               can_level: :advanced, want_level: :yes)
 
     get :index
@@ -32,9 +34,9 @@ class TechRadarControllerTest < Redmine::ControllerTest
   end
 
   def test_index_serialises_centroids_into_canvas_data_attribute
-    TechRadar::Rating.create!(user_id: 1, technology: @ruby,
+    TechRadar::Rating.create!(user: @admin, technology: @ruby,
                               can_level: :advanced, want_level: :yes)
-    TechRadar::Rating.create!(user_id: 2, technology: @ruby,
+    TechRadar::Rating.create!(user: @jsmith, technology: @ruby,
                               can_level: :professional, want_level: :probably_yes)
 
     get :index
