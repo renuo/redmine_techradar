@@ -32,8 +32,23 @@ module TechRadar
         .map { |name, can, want| { name: name, can: can.to_f, want: want.to_f } }
     end
 
+    def self.points_for_technology(technology_id)
+      joins(:user)
+        .where(technology_id: technology_id)
+        .pluck(
+          'users.login',
+          Arel.sql('can_level AS can_raw'),
+          Arel.sql('want_level AS want_raw')
+        )
+        .map { |login, can, want| { name: login, can: can.to_f, want: want.to_f } }
+    end
+
     def self.users_with_ratings
       User.where(id: select(:user_id).distinct).order(:login)
+    end
+
+    def self.technologies_with_ratings
+      TechRadar::Technology.where(id: select(:technology_id).distinct).order(:name)
     end
   end
 end
