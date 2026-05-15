@@ -1,8 +1,14 @@
 en:
   permission_view_tech_radar: "View Tech Radar"
   permission_rate_technologies: "Rate technologies"
-  label_tech_radar_rate: "Rate Technologies"
+  label_tech_radar: "Tech Radar"
   tech_radar:
+    nav:
+      evaluation: "Evaluation"
+      rate: "Rate"
+    evaluation:
+      can_axis: "Can"
+      want_axis: "Want"
     rate:
       can_label: "How well do you know it?"
       want_label: "Do you want to work with it?"

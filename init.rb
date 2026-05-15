@@ -23,8 +23,8 @@ Redmine::Plugin.register :redmine_techradar do
              global: true,
              require: :loggedin
 
-  menu :top_menu, :tech_radar_rate,
-       { controller: 'tech_radar_ratings', action: 'show' },
-       caption: :label_tech_radar_rate,
-       if: ->(_) { User.current.allowed_to?(:rate_technologies, nil, global: true) }
+  menu :top_menu, :tech_radar,
+       { controller: 'tech_radar', action: 'index' },
+       caption: :label_tech_radar,
+       if: ->(_) { User.current.allowed_to?(:view_tech_radar, nil, global: true) }
 end

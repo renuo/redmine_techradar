@@ -9,5 +9,16 @@ module TechRadar
     enum :want_level, { no: 1, probably_no: 2, neutral: 3, probably_yes: 4, yes: 5 }
 
     validates :user_id, uniqueness: { scope: :technology_id }
+
+    def self.centroids_by_technology
+      joins(:technology)
+        .group('tech_radar_technologies.name')
+        .pluck(
+          'tech_radar_technologies.name',
+          Arel.sql('AVG(can_level)'),
+          Arel.sql('AVG(want_level)')
+        )
+        .map { |name, can, want| { name: name, can: can.to_f, want: want.to_f } }
+    end
   end
 end
