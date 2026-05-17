@@ -81,4 +81,13 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
 
     assert_select 'h2', text: 'Ruby'
   end
+
+  def test_show_forbidden_for_user_without_rate_permission
+    jsmith = User.find_by(login: 'jsmith')
+    @request.session[:user_id] = jsmith.id
+
+    get :show
+
+    assert_response :forbidden
+  end
 end
