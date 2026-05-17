@@ -43,6 +43,13 @@ module TechRadar
       current_card.nil?
     end
 
+    def last_unrated?
+      return false unless current_card
+      return false if rated_technology_ids.include?(current_card.id)
+
+      position + 1 >= history.length && next_unrated_technology.nil?
+    end
+
     private
 
     def load_current_card
