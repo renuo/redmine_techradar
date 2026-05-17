@@ -16,10 +16,13 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
   end
 
   def test_show_renders_first_unrated_technology
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
     get :show
 
     assert_response :success
-    assert_select 'h2', text: 'Ruby'
+    assert_select 'h2', text: 'Rails'
   end
 
   def test_show_renders_nav_with_rate_marked_active
