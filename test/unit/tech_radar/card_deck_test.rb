@@ -7,7 +7,7 @@ module TechRadar
     fixtures :users
 
     def setup
-      @user = User.find(2)
+      @user = User.find_by(login: 'jsmith')
       @t1 = Technology.create!(name: 'Ruby')
       @t2 = Technology.create!(name: 'Rails')
       @t3 = Technology.create!(name: 'Stimulus')
