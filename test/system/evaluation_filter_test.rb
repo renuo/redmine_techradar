@@ -27,6 +27,13 @@ class EvaluationFilterTest < ApplicationSystemTestCase
     super
   end
 
+  def test_unfiltered_chart_shows_one_aggregated_point_per_technology
+    log_user('admin', 'admin')
+    visit '/tech_radar'
+
+    assert_chart_labels %w[Rails Ruby]
+  end
+
   def test_filtering_by_person_restricts_chart_to_their_ratings
     log_user('admin', 'admin')
     visit '/tech_radar'

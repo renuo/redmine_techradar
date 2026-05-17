@@ -13,11 +13,6 @@ module TechRadar
       @rails = Technology.create!(name: 'Rails')
     end
 
-    def teardown
-      Rating.delete_all
-      Technology.delete_all
-    end
-
     def test_centroids_by_technology_returns_empty_without_ratings
       assert_empty Rating.centroids_by_technology
     end

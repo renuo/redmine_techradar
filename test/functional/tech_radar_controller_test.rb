@@ -55,6 +55,14 @@ class TechRadarControllerTest < Redmine::ControllerTest
     assert_redirected_to %r{/login}
   end
 
+  def test_index_forbidden_for_user_without_view_permission
+    @request.session[:user_id] = @jsmith.id
+
+    get :index
+
+    assert_response :forbidden
+  end
+
   def test_index_with_user_id_serialises_only_that_users_points
     TechRadar::Rating.create!(user: @admin,  technology: @ruby,
                               can_level: :advanced, want_level: :yes)
