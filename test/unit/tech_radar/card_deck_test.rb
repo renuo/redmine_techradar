@@ -133,5 +133,16 @@ module TechRadar
 
       assert_nil deck.current_rating
     end
+
+    def test_last_unrated_false_when_unrated_card_has_future_history
+      deck = CardDeck.new(@user, @state)
+      deck.current_card
+      deck.advance!
+      deck.current_card
+      deck.retreat!
+
+      assert_equal @t1, deck.current_card
+      assert_not deck.last_unrated?
+    end
   end
 end

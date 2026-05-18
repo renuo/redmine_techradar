@@ -7,6 +7,7 @@ class TechRadarRatingsController < ApplicationController
   def show
     @technology = deck.current_card
     @rating = deck.current_rating
+    @last_unrated = deck.last_unrated?
   end
 
   def update
@@ -24,7 +25,7 @@ class TechRadarRatingsController < ApplicationController
   end
 
   def skip
-    deck.advance!
+    deck.advance! unless deck.last_unrated?
     redirect_to tech_radar_rating_path
   end
 

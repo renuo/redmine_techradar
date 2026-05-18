@@ -24,12 +24,19 @@ export default class extends Controller {
       plugins: [ChartDataLabels],
       options: {
         layout: { padding: { top: 24, right: 48 } },
+        interaction: { mode: 'point', intersect: true },
         scales: {
           x: { title: { display: true, text: this.wantLabelValue }, min: 1, max: 5, ticks: { stepSize: 1 } },
           y: { title: { display: true, text: this.canLabelValue }, min: 1, max: 4, ticks: { stepSize: 1 } }
         },
         plugins: {
           legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: () => '',
+              label: (ctx) => ctx.raw.label
+            }
+          },
           datalabels: {
             align: 'top',
             offset: 4,
