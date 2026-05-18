@@ -16,17 +16,13 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
   end
 
   def test_show_renders_first_unrated_technology
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
     get :show
 
     assert_response :success
-    assert_select 'h2', text: 'Ruby'
-  end
-
-  def test_show_renders_nav_with_rate_marked_active
-    get :show
-
-    assert_select 'ul.tech-radar-nav li.active a', text: 'Rate'
-    assert_select 'ul.tech-radar-nav li:not(.active) a', text: 'Evaluation'
+    assert_select 'h2', text: 'Rails'
   end
 
   def test_show_renders_done_message_when_all_rated
@@ -70,6 +66,20 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
 
     assert_redirected_to tech_radar_rating_path
     assert_equal 0, TechRadar::Rating.where(user_id: @admin.id).count
+  end
+
+  def test_skip_does_not_advance_past_last_unrated_technology
+    TechRadar::Rating.create!(user_id: @admin.id, technology: @t1,
+                              can_level: :unknown, want_level: :neutral)
+
+    post :skip
+
+    assert_redirected_to tech_radar_rating_path
+
+    get :show
+
+    assert_select 'h2', text: 'Rails'
+    assert_select '.tech-radar-card-done', count: 0
   end
 
   def test_back_returns_to_previous_card

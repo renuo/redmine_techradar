@@ -41,12 +41,14 @@
       </fieldset>
     <% end %>
 
-    <%= button_to t('tech_radar.rate.skip'),
-                  skip_tech_radar_rating_path, method: :post,
-                  data: { rating_card_target: 'skip' } %>
     <%= button_to t('tech_radar.rate.back'),
                   back_tech_radar_rating_path, method: :post,
                   data: { rating_card_target: 'back' } %>
+    <% unless @last_unrated %>
+      <%= button_to t('tech_radar.rate.skip'),
+                    skip_tech_radar_rating_path, method: :post,
+                    data: { rating_card_target: 'skip' } %>
+    <% end %>
   </div>
 <% else %>
   <div class="tech-radar-card-done">

@@ -1,3 +1,15 @@
+.tech-radar-card,
+.tech-radar-card-done {
+  max-width: 480px;
+  margin: 3em auto;
+  text-align: center;
+}
+
+.tech-radar-card-want {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 .tech-radar-card button[data-level].previous {
   border: 2px dashed #6090c0;
   background: #f0f6fc;
