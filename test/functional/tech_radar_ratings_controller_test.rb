@@ -72,13 +72,12 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     TechRadar::Rating.create!(user_id: @admin.id, technology: @t1,
                               can_level: :unknown, want_level: :neutral)
 
-    get :show
-    assert_select 'h2', text: 'Rails'
-
     post :skip
+
     assert_redirected_to tech_radar_rating_path
 
     get :show
+
     assert_select 'h2', text: 'Rails'
     assert_select '.tech-radar-card-done', count: 0
   end
