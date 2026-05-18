@@ -66,6 +66,12 @@ Open Redmine and click **Tech Radar** in the top menu.
 
 ## Development
 
+Start the Redmine server:
+
+```sh
+bundle exec rails server
+```
+
 Run the tests:
 
 ```sh
