@@ -1,3 +1,33 @@
-# English strings go here for Rails i18n
 en:
-  # my_label: "My label"
+  permission_view_tech_radar: "View Tech Radar"
+  permission_rate_technologies: "Rate technologies"
+  label_tech_radar: "Tech Radar"
+  tech_radar:
+    nav:
+      evaluation: "Evaluation"
+      rate: "Rate"
+    evaluation:
+      can_axis: "Can"
+      want_axis: "Want"
+      filter:
+        user_label: "Person"
+        all_users: "All people"
+        technology_label: "Technology"
+        all_technologies: "All technologies"
+    rate:
+      can_label: "How well do you know it?"
+      want_label: "Do you want to work with it?"
+      can:
+        unknown: "Unknown"
+        beginner: "Beginner"
+        advanced: "Advanced"
+        professional: "Professional"
+      want:
+        "no": "No"
+        probably_no: "Rather no"
+        neutral: "Neutral"
+        probably_yes: "Rather yes"
+        "yes": "Yes"
+      skip: "Skip"
+      back: "Back"
+      all_rated: "You've rated every technology. Thanks!"
