@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+exec bundle exec rake redmine:plugins:test NAME=redmine_techradar
