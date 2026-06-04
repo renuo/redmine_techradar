@@ -6,10 +6,8 @@ ROLE_PERMISSIONS = {
 }.freeze
 
 ROLE_PERMISSIONS.each do |name, permissions|
-  Role.find_or_create_by!(name: name) do |role|
-    role.permissions = permissions
-    role.assignable = true
-  end
+  Role.find_or_initialize_by(name: name)
+    .update!(permissions: permissions, assignable: true)
 end
 
 [
