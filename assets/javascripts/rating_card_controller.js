@@ -66,8 +66,8 @@ export default class extends Controller {
     if (this.shouldIgnoreKey(event)) return
 
     if (event.key === 'ArrowRight') {
-      if (!this.hasSkipTarget) return
       event.preventDefault()
+      if (!this.hasSkipTarget) return
       this.skipTarget.click()
       return
     }
