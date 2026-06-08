@@ -39,35 +39,35 @@ module TechRadar
       assert_predicate deck, :done?
     end
 
-    def test_advance_walks_through_unrated_technologies
+    def test_skip_walks_through_unrated_technologies
       deck = CardDeck.new(@user, @state)
       visited = []
       4.times do
         visited << deck.current_card
-        deck.advance!
+        deck.skip!
       end
 
       assert_equal [@t1, @t2, @t3, nil], visited
     end
 
-    def test_retreat_clamps_at_zero
+    def test_back_clamps_at_zero
       deck = CardDeck.new(@user, @state)
-      deck.retreat!
+      deck.back!
 
       assert_equal @t1, deck.current_card
     end
 
-    def test_retreat_returns_to_previously_visited_card
+    def test_back_returns_to_previously_visited_card
       deck = CardDeck.new(@user, @state)
       deck.current_card
-      deck.advance!
+      deck.skip!
       deck.current_card
-      deck.retreat!
+      deck.back!
 
       assert_equal @t1, deck.current_card
     end
 
-    def test_record_creates_rating_for_current_card
+    def test_record_creates_rating_for_current_card_and_advances
       deck = CardDeck.new(@user, @state)
       deck.current_card
 
@@ -77,13 +77,15 @@ module TechRadar
 
       assert_equal 'advanced', rating.can_level
       assert_equal 'yes', rating.want_level
+      assert_equal @t2, deck.current_card
     end
 
-    def test_record_twice_on_same_card_keeps_one_row_with_second_values
+    def test_record_again_after_back_keeps_one_row_with_second_values
       deck = CardDeck.new(@user, @state)
       deck.current_card
 
       deck.record!(:beginner, :no)
+      deck.back!
       deck.record!(:professional, :yes)
 
       ratings = Rating.where(user: @user, technology: @t1)
@@ -103,7 +105,7 @@ module TechRadar
     def test_current_card_removes_stale_history_entry_and_advances
       deck = CardDeck.new(@user, @state)
       deck.current_card
-      deck.advance!
+      deck.skip!
       deck.current_card
       stale_id = @t2.id
       @t2.destroy!
@@ -118,9 +120,8 @@ module TechRadar
       deck = CardDeck.new(@user, @state)
       deck.current_card
       deck.record!(:advanced, :yes)
-      deck.advance!
       deck.current_card
-      deck.retreat!
+      deck.back!
 
       assert_equal @t1, deck.current_card
       assert_equal 'advanced', deck.current_rating.can_level
@@ -137,9 +138,9 @@ module TechRadar
     def test_last_unrated_false_when_unrated_card_has_future_history
       deck = CardDeck.new(@user, @state)
       deck.current_card
-      deck.advance!
+      deck.skip!
       deck.current_card
-      deck.retreat!
+      deck.back!
 
       assert_equal @t1, deck.current_card
       assert_not deck.last_unrated?

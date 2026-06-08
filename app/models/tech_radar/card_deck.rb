@@ -19,12 +19,12 @@ module TechRadar
       Rating.find_by(user: @user, technology: current_card)
     end
 
-    def advance!
+    def skip!
       @state[:position] = position + 1
       @current_card = nil
     end
 
-    def retreat!
+    def back!
       @state[:position] = [position - 1, 0].max
       @current_card = nil
     end
@@ -36,6 +36,7 @@ module TechRadar
       rating.can_level = can_level
       rating.want_level = want_level
       rating.save!
+      skip!
       rating
     end
 
