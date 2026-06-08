@@ -93,18 +93,13 @@ class TechRadarControllerTest < Redmine::ControllerTest
     assert_equal @admin.id.to_s, selected['value']
   end
 
-  def test_index_with_unknown_user_id_falls_back_to_centroids
+  def test_index_with_unknown_user_id_returns_unprocessable_entity
     TechRadar::Rating.create!(user: @admin,  technology: @ruby,
                               can_level: :advanced,    want_level: :yes)
-    TechRadar::Rating.create!(user: @jsmith, technology: @ruby,
-                              can_level: :professional, want_level: :probably_yes)
 
     get :index, params: { user_id: 999_999 }
 
-    canvas = css_select('canvas[data-controller="scatter-chart"]').first
-    points = JSON.parse(canvas['data-scatter-chart-points-value'])
-
-    assert_equal [{ 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
+    assert_response :unprocessable_entity
   end
 
   def test_index_with_technology_id_serialises_one_point_per_rater
@@ -149,18 +144,13 @@ class TechRadarControllerTest < Redmine::ControllerTest
     assert_equal @ruby.id.to_s, selected['value']
   end
 
-  def test_index_with_unknown_technology_id_falls_back_to_centroids
+  def test_index_with_unknown_technology_id_returns_unprocessable_entity
     TechRadar::Rating.create!(user: @admin,  technology: @ruby,
                               can_level: :advanced,    want_level: :yes)
-    TechRadar::Rating.create!(user: @jsmith, technology: @ruby,
-                              can_level: :professional, want_level: :probably_yes)
 
     get :index, params: { technology_id: 999_999 }
 
-    canvas = css_select('canvas[data-controller="scatter-chart"]').first
-    points = JSON.parse(canvas['data-scatter-chart-points-value'])
-
-    assert_equal [{ 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
+    assert_response :unprocessable_entity
   end
 
   def test_index_with_both_user_and_technology_lets_technology_win

@@ -8,11 +8,9 @@ class TechRadarController < ApplicationController
     @users = TechRadar::Rating.users_with_ratings
     @technologies = TechRadar::Rating.technologies_with_ratings
 
-    @user_id = params[:user_id].presence&.to_i
-    @user_id = nil unless @user_id && @users.exists?(id: @user_id)
-
-    @technology_id = params[:technology_id].presence&.to_i
-    @technology_id = nil unless @technology_id && @technologies.exists?(id: @technology_id)
+    @user_id = filter_id(params[:user_id], @users)
+    @technology_id = filter_id(params[:technology_id], @technologies)
+    return head :unprocessable_entity if @user_id == :invalid || @technology_id == :invalid
 
     @user_id = nil if @technology_id
 
@@ -23,5 +21,14 @@ class TechRadarController < ApplicationController
               else
                 TechRadar::Rating.centroids_by_technology
               end
+  end
+
+  private
+
+  def filter_id(param, scope)
+    return nil if param.blank?
+
+    id = param.to_i
+    scope.exists?(id: id) ? id : :invalid
   end
 end

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec bundle exec rake redmine:plugins:test NAME=redmine_techradar

@@ -33,13 +33,13 @@ Install the plugin's gems and run its migrations:
 
 ```sh
 bundle install
-bundle exec rake redmine:plugins:migrate RAILS_ENV=production
+bundle exec rake redmine:plugins:migrate
 ```
 
 Load the seed data (two roles and a starter list of technologies):
 
 ```sh
-bundle exec rake redmine_techradar:seed RAILS_ENV=production
+bundle exec rake redmine_techradar:seed
 ```
 
 ## Configuration
