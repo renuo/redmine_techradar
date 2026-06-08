@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 exec bundle exec rubocop --ignore-parent-exclusion
