@@ -20,17 +20,16 @@ class TechRadarRatingsController < ApplicationController
     end
 
     deck.record!(can_level, want_level)
-    deck.advance!
     redirect_to tech_radar_rating_path
   end
 
   def skip
-    deck.advance! unless deck.last_unrated?
+    deck.skip! unless deck.last_unrated?
     redirect_to tech_radar_rating_path
   end
 
   def back
-    deck.retreat!
+    deck.back!
     redirect_to tech_radar_rating_path
   end
 
