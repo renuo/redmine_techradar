@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
-pin 'redmine_techradar/application',
-    to: 'plugin_assets/redmine_techradar/application.js',
-    preload: true
-pin 'redmine_techradar/rating_card_controller',
-    to: 'plugin_assets/redmine_techradar/rating_card_controller.js',
-    preload: true
-pin 'redmine_techradar/scatter_chart_controller',
-    to: 'plugin_assets/redmine_techradar/scatter_chart_controller.js',
-    preload: true
+pin_all_from File.expand_path('../assets/javascripts', __dir__),
+             under: 'redmine_techradar',
+             to: 'plugin_assets/redmine_techradar',
+             preload: true
 
 pin 'chart.js/auto',
     to: 'https://ga.jspm.io/npm:chart.js@4.5.1/auto/auto.js'
