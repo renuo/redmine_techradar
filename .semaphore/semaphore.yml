@@ -35,8 +35,8 @@ blocks:
             - ~/redmine_techradar/.semaphore/bin/setup_redmine
             - ~/redmine_techradar/.semaphore/bin/setup_redmine_techradar
             - cd ~/redmine/plugins/redmine_techradar
-            - CI=true bundle exec rubocop
-            - CI=true bundle exec rake redmine_techradar:check
+            - CI=true bin/fastcheck
+            - CI=true bin/check
 
       epilogue:
         always:
