@@ -1,9 +1,10 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['form', 'canField', 'wantField', 'canButton', 'wantButton', 'skip', 'back']
+  static targets = ['form', 'canField', 'wantField', 'canButton', 'wantButton', 'forward', 'back']
   static values = {
     basePath: String,
+    skipUrl: String,
     canLevel: String,
     wantLevel: String,
     previousCanLevel: String,
@@ -16,6 +17,7 @@ export default class extends Controller {
     document.addEventListener('keydown', this.boundKeydown)
     this.refreshHighlights()
     this.setupBackButton()
+    this.setupForwardButton()
   }
 
   disconnect() {
@@ -26,11 +28,14 @@ export default class extends Controller {
     if (this.hasBackTarget) this.backTarget.hidden = !this.canGoBack()
   }
 
-  // Only offer "back" when the previous page is another rating card, so we never
-  // show a dead button on the first card and "back" always returns to a tech we
-  // actually saw. document.referrer is empty on a fresh entry and otherwise names
-  // the page we came from; history.length never resets and would reintroduce the
-  // dead-button case.
+  setupForwardButton() {
+    if (this.hasForwardTarget) this.forwardTarget.hidden = !this.canGoForwardOrSkip()
+  }
+
+  canGoForwardOrSkip() {
+    return this.canGoForward() || Boolean(this.skipUrlValue)
+  }
+
   canGoBack() {
     if (!document.referrer) return false
     try {
@@ -51,8 +56,8 @@ export default class extends Controller {
   forward() {
     if (this.canGoForward()) {
       window.history.forward()
-    } else if (this.hasSkipTarget) {
-      this.skipTarget.click()
+    } else if (this.skipUrlValue) {
+      window.location.assign(this.skipUrlValue)
     }
   }
 
@@ -107,12 +112,12 @@ export default class extends Controller {
 
     if (event.key === 'ArrowRight') {
       event.preventDefault()
-      this.forward()
+      if (this.hasForwardTarget && !this.forwardTarget.hidden) this.forward()
       return
     }
     if (event.key === 'ArrowLeft') {
       event.preventDefault()
-      if (this.hasBackTarget && !this.backTarget.hidden) window.history.back()
+      if (this.hasBackTarget && !this.backTarget.hidden) this.back()
       return
     }
 
