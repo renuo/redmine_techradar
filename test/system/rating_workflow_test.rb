@@ -50,10 +50,19 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     visit '/tech_radar/rate'
 
     assert_selector 'h2', text: 'Ruby'
-    click_button 'Skip'
+    click_link 'Skip'
 
     assert_selector 'h2', text: 'Rails'
     assert_empty rating_values_for(@t1)
+  end
+
+  def test_back_hidden_on_first_technology
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+
+    assert_selector 'h2', text: 'Ruby'
+    assert_no_button 'Back' # no in-flow history yet, so the back button stays hidden
   end
 
   def test_back_shows_previously_chosen_rating
@@ -90,6 +99,85 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     assert_equal [{ can_level: 'professional', want_level: 'yes' }], rating_values_for(@t1)
   end
 
+  # Guards back/forward navigation: every revisited rated card shows its rating.
+  # Headless Chrome re-requests on history navigation (so the server renders the
+  # ".previous" highlight here); in a real browser a bfcache restore instead keeps the
+  # frozen ".selected" highlight, which still shows the rating.
+  def test_back_through_every_rated_card_shows_its_rating
+    @t3 = TechRadar::Technology.create!(name: 'Vue')
+    @t4 = TechRadar::Technology.create!(name: 'Go')
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+
+    find('h2', text: 'Ruby')
+    click_button '2. Beginner'
+    click_button '1. No'
+
+    find('h2', text: 'Rails')
+    click_button '3. Advanced'
+    click_button '5. Yes'
+
+    find('h2', text: 'Vue')
+    click_button '4. Professional'
+    click_button '5. Yes'
+
+    find('h2', text: 'Go') # now on the fourth, unrated technology
+
+    # Walk back through every rated card, then forward again — the reported scenario.
+    # Each revisited card must show its saved rating, not just the first one.
+    shown = {}
+    page.go_back
+    shown['Vue back'] = previous_levels('Vue')
+    page.go_back
+    shown['Rails back'] = previous_levels('Rails')
+    page.go_back
+    shown['Ruby back'] = previous_levels('Ruby')
+    page.go_forward
+    shown['Rails forward'] = previous_levels('Rails')
+    page.go_forward
+    shown['Vue forward'] = previous_levels('Vue')
+
+    assert_equal({
+                   'Vue back' => %w[professional yes], 'Rails back' => %w[advanced yes],
+                   'Ruby back' => %w[beginner no], 'Rails forward' => %w[advanced yes],
+                   'Vue forward' => %w[professional yes]
+                 }, shown)
+  end
+
+  # The right arrow goes forward through history (back toward the card we started on),
+  # not to the next unrated card the way Skip does. From Ruby, forward must land on
+  # Rails (the next in history) rather than Go (the next unrated, skipping Rails/Vue).
+  def test_forward_key_walks_history_instead_of_skipping
+    @t3 = TechRadar::Technology.create!(name: 'Vue')
+    @t4 = TechRadar::Technology.create!(name: 'Go')
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/rate'
+
+    find('h2', text: 'Ruby')
+    find('body').send_keys('2', '1')
+
+    find('h2', text: 'Rails')
+    find('body').send_keys('3', '5')
+
+    find('h2', text: 'Vue')
+    find('body').send_keys('4', '5')
+
+    find('h2', text: 'Go') # frontier (unrated)
+
+    find('body').send_keys(:arrow_left)
+    find('h2', text: 'Vue')
+    find('body').send_keys(:arrow_left)
+    find('h2', text: 'Rails')
+    find('body').send_keys(:arrow_left)
+    find('h2', text: 'Ruby')
+
+    find('body').send_keys(:arrow_right)
+
+    assert_selector 'h2', text: 'Rails'
+  end
+
   def test_done_view_shown_after_all_technologies_rated
     log_user('admin', 'admin')
 
@@ -105,6 +193,12 @@ class RatingWorkflowTest < ApplicationSystemTestCase
   end
 
   private
+
+  # The saved-rating highlight for the card currently shown, once it has rendered.
+  def previous_levels(technology_name)
+    find('h2', text: technology_name)
+    all('button.previous').pluck('data-level').sort
+  end
 
   def rating_values_for(technology)
     TechRadar::Rating.where(user: @user, technology: technology)
