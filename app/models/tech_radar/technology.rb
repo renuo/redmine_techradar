@@ -15,7 +15,7 @@ module TechRadar
       pool = unrated_by(user)
       return pool.first if current.nil?
 
-      pool.where('tech_radar_technologies.id > ?', current.id).first
+      pool.where(arel_table[:id].gt(current.id)).first
     end
   end
 end
