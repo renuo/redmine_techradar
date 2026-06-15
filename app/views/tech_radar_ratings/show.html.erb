@@ -3,11 +3,12 @@
 <% if @technology %>
   <div class="tech-radar-card"
        data-controller="rating-card"
+       data-rating-card-base-path-value="<%= tech_radar_rating_path %>"
        data-rating-card-previous-can-level-value="<%= @rating&.can_level %>"
        data-rating-card-previous-want-level-value="<%= @rating&.want_level %>">
     <h2><%= @technology.name %></h2>
 
-    <%= form_with url: tech_radar_rating_path, method: :patch,
+    <%= form_with url: tech_radar_rate_technology_path(@technology), method: :patch,
                   data: { rating_card_target: 'form' } do |f| %>
       <%= f.hidden_field 'rating[can_level]',
                          value: '',
@@ -20,6 +21,7 @@
         <legend><%= t('tech_radar.rate.can_label') %></legend>
         <% TechRadar::Rating.can_levels.each_key.with_index(1) do |key, i| %>
           <button type="button"
+                  class="<%= 'previous' if @rating&.can_level == key %>"
                   data-action="click->rating-card#selectCan"
                   data-rating-card-target="canButton"
                   data-level="<%= key %>">
@@ -32,6 +34,7 @@
         <legend><%= t('tech_radar.rate.want_label') %></legend>
         <% TechRadar::Rating.want_levels.each_key.with_index(1) do |key, i| %>
           <button type="button"
+                  class="<%= 'previous' if @rating&.want_level == key %>"
                   data-action="click->rating-card#selectWant"
                   data-rating-card-target="wantButton"
                   data-level="<%= key %>">
@@ -41,13 +44,16 @@
       </fieldset>
     <% end %>
 
-    <%= button_to t('tech_radar.rate.back'),
-                  back_tech_radar_rating_path, method: :post,
-                  data: { rating_card_target: 'back' } %>
-    <% unless @last_unrated %>
-      <%= button_to t('tech_radar.rate.skip'),
-                    skip_tech_radar_rating_path, method: :post,
-                    data: { rating_card_target: 'skip' } %>
+    <button type="button"
+            data-action="click->rating-card#back"
+            data-rating-card-target="back"
+            hidden>
+      <%= t('tech_radar.rate.back') %>
+    </button>
+    <% if @next_unrated %>
+      <%= link_to t('tech_radar.rate.skip'),
+                  tech_radar_rate_technology_path(@next_unrated),
+                  data: { rating_card_target: 'skip' } %>
     <% end %>
   </div>
 <% else %>
