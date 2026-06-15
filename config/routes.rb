@@ -5,10 +5,7 @@
 
 get 'tech_radar', to: 'tech_radar#index', as: :tech_radar
 
-resource :tech_radar_rating,
-         only: [:show, :update],
-         path: 'tech_radar/rate',
-         controller: 'tech_radar_ratings' do
-  post :skip
-  post :back
-end
+get 'tech_radar/rate', to: 'tech_radar_ratings#index', as: :tech_radar_rating
+
+get   'tech_radar/rate/:technology_id', to: 'tech_radar_ratings#show', as: :tech_radar_rate_technology
+patch 'tech_radar/rate/:technology_id', to: 'tech_radar_ratings#update'
