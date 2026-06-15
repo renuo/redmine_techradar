@@ -57,6 +57,8 @@ export default class extends Controller {
   }
 
   canGoForward() {
+    // Navigation API is Chromium-only; on Firefox/Safari this is always false,
+    // so forward() falls back to Skip (advance to the next unrated card).
     return Boolean(window.navigation && window.navigation.canGoForward)
   }
 
@@ -112,7 +114,7 @@ export default class extends Controller {
     }
     if (event.key === 'ArrowLeft') {
       event.preventDefault()
-      if (this.hasBackTarget && !this.backTarget.hidden) window.history.back()
+      if (this.hasBackTarget && !this.backTarget.hidden) this.back()
       return
     }
 
