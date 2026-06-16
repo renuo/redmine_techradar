@@ -6,9 +6,7 @@ export default class extends Controller {
     basePath: String,
     skipUrl: String,
     canLevel: String,
-    wantLevel: String,
-    previousCanLevel: String,
-    previousWantLevel: String
+    wantLevel: String
   }
 
   connect() {
@@ -16,24 +14,12 @@ export default class extends Controller {
     this.boundKeydown = this.handleKeydown.bind(this)
     document.addEventListener('keydown', this.boundKeydown)
     this.refreshHighlights()
-    this.setupBackButton()
-    this.setupForwardButton()
+    if (this.hasBackTarget) this.backTarget.hidden = !this.canGoBack()
+    if (this.hasForwardTarget) this.forwardTarget.hidden = !(this.canGoForward() || this.skipUrlValue)
   }
 
   disconnect() {
     document.removeEventListener('keydown', this.boundKeydown)
-  }
-
-  setupBackButton() {
-    if (this.hasBackTarget) this.backTarget.hidden = !this.canGoBack()
-  }
-
-  setupForwardButton() {
-    if (this.hasForwardTarget) this.forwardTarget.hidden = !this.canGoForwardOrSkip()
-  }
-
-  canGoForwardOrSkip() {
-    return this.canGoForward() || Boolean(this.skipUrlValue)
   }
 
   canGoBack() {
@@ -92,11 +78,9 @@ export default class extends Controller {
 
   refreshHighlights() {
     this.canButtonTargets.forEach((btn) => {
-      btn.classList.toggle('previous', btn.dataset.level === this.previousCanLevelValue)
       btn.classList.toggle('selected', btn.dataset.level === this.canLevelValue)
     })
     this.wantButtonTargets.forEach((btn) => {
-      btn.classList.toggle('previous', btn.dataset.level === this.previousWantLevelValue)
       btn.classList.toggle('selected', btn.dataset.level === this.wantLevelValue)
     })
   }

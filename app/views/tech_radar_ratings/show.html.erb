@@ -4,9 +4,7 @@
   <div class="tech-radar-card"
        data-controller="rating-card"
        data-rating-card-base-path-value="<%= tech_radar_rating_path %>"
-       <% if @next_unrated %>data-rating-card-skip-url-value="<%= tech_radar_rate_technology_path(@next_unrated) %>"<% end %>
-       data-rating-card-previous-can-level-value="<%= @rating&.can_level %>"
-       data-rating-card-previous-want-level-value="<%= @rating&.want_level %>">
+       <% if @next_unrated %>data-rating-card-skip-url-value="<%= tech_radar_rate_technology_path(@next_unrated) %>"<% end %>>
     <h2><%= @technology.name %></h2>
 
     <%= form_with url: tech_radar_rate_technology_path(@technology), method: :patch,

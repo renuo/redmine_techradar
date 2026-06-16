@@ -15,8 +15,7 @@
   padding: 0;
   border: 0;
   font: inherit;
-  color: black !important;
-  text-decoration: none;
+  color: black;
   vertical-align: middle;
   cursor: pointer;
 }
