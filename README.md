@@ -36,7 +36,7 @@ bundle install
 bundle exec rake redmine:plugins:migrate
 ```
 
-Load the seed data (two roles and a starter list of technologies):
+Load the seed data (two roles, a starter list of technologies, and two test users):
 
 ```sh
 bundle exec rake redmine_techradar:seed
@@ -54,6 +54,15 @@ The seed adds two roles:
 Assign one of these roles to each user under **Administration → Users → *(user)* → Projects → New**: pick any project and check the appropriate role. The permissions are global, so the project is just a vehicle for the role assignment. Sales users see only the evaluation chart; developers also see the rating view.
 
 The two permissions (`view_tech_radar` and `rate_technologies`) are global and can also be wired into your own custom roles under **Administration → Roles and permissions**.
+
+### Test users
+
+For local development the seed also creates a `tech-radar` project and one test user per role, each already assigned to that project. Both share the password `techradar123`:
+
+| Login | Role | Sees |
+| --- | --- | --- |
+| `techradar_dev` | `Tech Radar Entwickler` | Rating view and evaluation chart |
+| `techradar_sales` | `Tech Radar Sales` | Evaluation chart only |
 
 The starter list of technologies lives in [`db/seeds.rb`](db/seeds.rb). Edit the array and re-run the seed task to add or remove entries — the seed is idempotent (`find_or_create_by!`), so existing technologies stay untouched.
 
