@@ -36,7 +36,6 @@ TEST_USERS.each do |login, attrs|
     u.mail = "#{login}@example.com"
     u.password = 'techradar123'
     u.status = User::STATUS_ACTIVE
-    puts "Created User #{u.mail} with password #{u.password}"
   end
 
   unless Member.exists?(user: user, project: project)
