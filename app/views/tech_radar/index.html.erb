@@ -18,9 +18,13 @@
                onchange: 'this.form.requestSubmit()' %>
 <% end %>
 
+<% can_ticks = TechRadar::Rating.can_levels.keys.map { |key| t("tech_radar.rate.can.#{key}") } %>
+<% want_ticks = TechRadar::Rating.want_levels.keys.map { |key| t("tech_radar.rate.want.#{key}") } %>
 <div class="tech-radar-evaluation">
   <canvas data-controller="scatter-chart"
           data-scatter-chart-points-value="<%= @points.to_json %>"
           data-scatter-chart-can-label-value="<%= t('tech_radar.evaluation.can_axis') %>"
-          data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"></canvas>
+          data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"
+          data-scatter-chart-can-ticks-value="<%= can_ticks.to_json %>"
+          data-scatter-chart-want-ticks-value="<%= want_ticks.to_json %>"></canvas>
 </div>
