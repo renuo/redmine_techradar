@@ -24,7 +24,7 @@ Redmine::Plugin.register :redmine_techradar do
              require: :loggedin
 
   menu :top_menu, :tech_radar,
-       { controller: 'tech_radar', action: 'index' },
+       :tech_radar_path,
        caption: :label_tech_radar,
        if: ->(_) { User.current.allowed_to?(:view_tech_radar, nil, global: true) }
 end
