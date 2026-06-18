@@ -20,7 +20,7 @@ export default class extends Controller {
       }]
     }
 
-    // The Can axis has no neutral level, so 0 carries no label — it only draws the centre line.
+    // The four can levels; 0 carries no label — it only draws the centre line between them.
     const canTickValues = [-1.5, -0.5, 0.5, 1.5]
     const zeroLine = (ctx) => (ctx.tick?.value === 0 ? '#999999' : 'rgba(0, 0, 0, 0.1)')
 
@@ -29,6 +29,7 @@ export default class extends Controller {
       data,
       plugins: [ChartDataLabels],
       options: {
+        aspectRatio: 1,
         layout: { padding: { top: 24, right: 48 } },
         interaction: { mode: 'point', intersect: true },
         scales: {
@@ -44,8 +45,8 @@ export default class extends Controller {
           },
           y: {
             title: { display: true, text: this.canLabelValue },
-            min: -1.5,
-            max: 1.5,
+            min: -2,
+            max: 2,
             grid: { color: zeroLine },
             afterBuildTicks: (axis) => {
               // Add 0 so the centre line is drawn
