@@ -21,6 +21,11 @@
   font-weight: bold;
 }
 
+.tech-radar-ratings {
+  max-width: 35em;
+  margin: auto;
+}
+
 .tech-radar-rating-row {
   display: flex;
   align-items: center;
@@ -32,6 +37,14 @@
   flex: 1;
 }
 
+.tech-radar-rating-axis,
+.tech-radar-rating-row select {
+  flex: 0 0 10em;
+  font-size: inherit;
+}
+
 .tech-radar-rating-head {
   font-weight: bold;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5em;
 }
