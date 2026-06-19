@@ -11,6 +11,10 @@
         <%= link_to t('tech_radar.nav.rate'), tech_radar_rating_path,
                     class: ('selected' if controller_name == 'tech_radar_ratings') %>
       </li>
+      <li>
+        <%= link_to t('tech_radar.nav.my_ratings'), tech_radar_ratings_path,
+                    class: ('selected' if current_page?(tech_radar_ratings_path)) %>
+      </li>
     <% end %>
   </ul>
 </div>

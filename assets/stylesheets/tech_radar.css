@@ -31,3 +31,18 @@
   background: #d6f5e0;
   font-weight: bold;
 }
+
+.tech-radar-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 0.5em;
+}
+
+.tech-radar-rating-name {
+  flex: 1;
+}
+
+.tech-radar-rating-head {
+  font-weight: bold;
+}
