@@ -15,6 +15,114 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     @t2 = TechRadar::Technology.create!(name: 'Rails')
   end
 
+  def test_index_lists_all_technologies
+    get :index
+
+    assert_response :success
+    assert_select '.tech-radar-rating-name', text: 'Ruby'
+    assert_select '.tech-radar-rating-name', text: 'Rails'
+  end
+
+  def test_index_preselects_current_users_rating
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index
+
+    assert_select "form[action=?] select[name=?] option[selected][value=?]",
+                  save_tech_radar_rating_path(@t1), 'rating[can_level]', 'advanced'
+    assert_select "form[action=?] select[name=?] option[selected][value=?]",
+                  save_tech_radar_rating_path(@t1), 'rating[want_level]', 'yes'
+  end
+
+  def test_index_does_not_preselect_another_users_rating
+    jsmith = User.find_by(login: 'jsmith')
+    TechRadar::Rating.create!(user: jsmith, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index
+
+    assert_response :success
+    assert_select "form[action=?] option[selected]",
+                  save_tech_radar_rating_path(@t1), count: 0
+  end
+
+  def test_index_orders_technologies_alphabetically
+    get :index
+
+    rows = css_select('.tech-radar-ratings form .tech-radar-rating-name')
+
+    assert_equal %w[Rails Ruby], rows.map { |span| span.text.strip }
+  end
+
+  def test_index_preselects_only_the_rated_rows
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index
+
+    assert_select "form[action=?] select[name=?] option[selected][value=?]",
+                  save_tech_radar_rating_path(@t1), 'rating[can_level]', 'advanced'
+    assert_select "form[action=?] option[selected]",
+                  save_tech_radar_rating_path(@t2), count: 0
+  end
+
+  def test_save_creates_rating_and_redirects
+    patch :save, params: { technology_id: @t1.id,
+                           rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_redirected_to tech_radar_ratings_path
+    rating = TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+
+    assert_equal 'advanced', rating.can_level
+    assert_equal 'yes', rating.want_level
+  end
+
+  def test_save_updates_existing_rating_without_adding_a_row
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :beginner, want_level: :no)
+
+    patch :save, params: { technology_id: @t1.id,
+                           rating: { can_level: 'professional', want_level: 'yes' } }
+
+    ratings = TechRadar::Rating.where(user_id: @admin.id, technology: @t1)
+
+    assert_equal 1, ratings.count
+    assert_equal 'professional', ratings.first.can_level
+    assert_equal 'yes', ratings.first.want_level
+  end
+
+  def test_save_returns_not_found_for_unknown_technology
+    patch :save, params: { technology_id: 0,
+                           rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_response :not_found
+  end
+
+  def test_save_returns_unprocessable_entity_for_unknown_level
+    patch :save, params: { technology_id: @t1.id,
+                           rating: { can_level: 'wizard', want_level: 'yes' } }
+
+    assert_response :unprocessable_entity
+    assert_nil TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+  end
+
+  def test_save_returns_unprocessable_entity_for_malformed_rating
+    patch :save, params: { technology_id: @t1.id, rating: 'oops' }
+
+    assert_response :unprocessable_entity
+    assert_nil TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+  end
+
+  def test_index_forbidden_for_user_without_rate_permission
+    jsmith = User.find_by(login: 'jsmith')
+    @request.session[:user_id] = jsmith.id
+
+    get :index
+
+    assert_response :forbidden
+  end
+
   def test_show_renders_first_unrated_technology
     TechRadar::Rating.create!(user: @admin, technology: @t1,
                               can_level: :advanced, want_level: :yes)
