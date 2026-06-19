@@ -1,24 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../test_helper'
-require_relative '../../../../test/application_system_test_case'
+require_relative 'tech_radar_system_test_case'
 
-class RatingWorkflowTest < ApplicationSystemTestCase
-  fixtures :users
-
-  def setup
-    super
-    @user = User.find_by(login: 'admin')
-    @t1 = TechRadar::Technology.create!(name: 'Ruby')
-    @t2 = TechRadar::Technology.create!(name: 'Rails')
-  end
-
-  def teardown
-    TechRadar::Rating.delete_all
-    TechRadar::Technology.delete_all
-    super
-  end
-
+class RatingWorkflowTest < TechRadarSystemTestCase
   def test_rate_via_click_persists_and_advances
     log_user('admin', 'admin')
 
@@ -102,12 +86,5 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button '5. Yes'
 
     assert_selector '.tech-radar-card-done', text: /rated every technology/i
-  end
-
-  private
-
-  def rating_values_for(technology)
-    TechRadar::Rating.where(user: @user, technology: technology)
-                     .map { |r| r.slice(:can_level, :want_level).symbolize_keys }
   end
 end
