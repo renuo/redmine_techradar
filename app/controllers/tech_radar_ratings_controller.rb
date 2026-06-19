@@ -4,6 +4,22 @@ class TechRadarRatingsController < ApplicationController
   before_action :require_login
   before_action :authorize_global
 
+  def index
+    @technologies = TechRadar::Technology.order(:name)
+    @ratings = TechRadar::Rating.where(user: User.current).index_by(&:technology_id)
+  end
+
+  def save
+    technology = TechRadar::Technology.find_by(id: params[:technology_id])
+    return head :not_found unless technology
+
+    levels = submitted_levels
+    return head :unprocessable_entity unless levels
+
+    TechRadar::Rating.record_for(User.current, technology, *levels)
+    redirect_to tech_radar_ratings_path
+  end
+
   def show
     @technology = deck.current_card
     @rating = deck.current_rating
@@ -11,15 +27,10 @@ class TechRadarRatingsController < ApplicationController
   end
 
   def update
-    can_level = params.dig(:rating, :can_level)
-    want_level = params.dig(:rating, :want_level)
+    levels = submitted_levels
+    return head :unprocessable_entity unless levels
 
-    unless TechRadar::Rating.can_levels.key?(can_level) &&
-           TechRadar::Rating.want_levels.key?(want_level)
-      return head :unprocessable_entity
-    end
-
-    deck.record!(can_level, want_level)
+    deck.record!(*levels)
     redirect_to tech_radar_rating_path
   end
 
@@ -34,6 +45,18 @@ class TechRadarRatingsController < ApplicationController
   end
 
   private
+
+  def submitted_levels
+    rating_params = params[:rating]
+    return unless rating_params.is_a?(ActionController::Parameters)
+
+    can_level = rating_params[:can_level]
+    want_level = rating_params[:want_level]
+    return unless TechRadar::Rating.can_levels.key?(can_level) &&
+                  TechRadar::Rating.want_levels.key?(want_level)
+
+    [can_level, want_level]
+  end
 
   def deck
     session[:tech_radar_rate] ||= {}

@@ -32,10 +32,7 @@ module TechRadar
     def record!(can_level, want_level)
       return nil unless current_card
 
-      rating = Rating.find_or_initialize_by(user: @user, technology: current_card)
-      rating.can_level = can_level
-      rating.want_level = want_level
-      rating.save!
+      rating = Rating.record_for(@user, current_card, can_level, want_level)
       skip!
       rating
     end
