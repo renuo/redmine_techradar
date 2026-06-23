@@ -23,31 +23,31 @@ module TechRadar
       assert_equal [@t1, @t3], Technology.unrated_by(@user).to_a
     end
 
-    def test_next_unrated_after_nil_returns_first_unrated
-      assert_equal @t1, Technology.next_unrated_after(@user, nil)
+    def test_next_unrated_nil_returns_first_unrated
+      assert_equal @t1, Technology.next_unrated(@user, nil)
     end
 
-    def test_next_unrated_after_returns_next_higher_id
-      assert_equal @t2, Technology.next_unrated_after(@user, @t1)
+    def test_next_unrated_returns_next_higher_id
+      assert_equal @t2, Technology.next_unrated(@user, @t1)
     end
 
-    def test_next_unrated_after_does_not_wrap_when_current_is_highest
-      assert_nil Technology.next_unrated_after(@user, @t3)
+    def test_next_unrated_does_not_wrap_when_current_is_highest
+      assert_nil Technology.next_unrated(@user, @t3)
     end
 
-    def test_next_unrated_after_returns_nil_when_no_higher_unrated_remains
+    def test_next_unrated_returns_nil_when_no_higher_unrated_remains
       Rating.create!(user: @user, technology: @t1, can_level: :advanced, want_level: :yes)
       Rating.create!(user: @user, technology: @t3, can_level: :beginner, want_level: :no)
 
-      assert_nil Technology.next_unrated_after(@user, @t2)
+      assert_nil Technology.next_unrated(@user, @t2)
     end
 
-    def test_next_unrated_after_returns_nil_when_all_rated
+    def test_next_unrated_returns_nil_when_all_rated
       [@t1, @t2, @t3].each do |t|
         Rating.create!(user: @user, technology: t, can_level: :unknown, want_level: :neutral)
       end
 
-      assert_nil Technology.next_unrated_after(@user, @t1)
+      assert_nil Technology.next_unrated(@user, @t1)
     end
   end
 end
