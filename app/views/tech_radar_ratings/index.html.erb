@@ -16,7 +16,7 @@
 
   <% @technologies.each do |technology| %>
     <% rating = @ratings[technology.id] %>
-    <%= form_with url: save_tech_radar_rating_path(technology), method: :patch,
+    <%= form_with url: save_tech_radar_rating_path(technology, page: params[:page]), method: :patch,
                   class: 'tech-radar-rating-row', data: { controller: 'rating-row' } do |f| %>
       <span class="tech-radar-rating-name"><%= technology.name %></span>
       <%= f.select 'rating[can_level]', can_options,
@@ -28,3 +28,5 @@
     <% end %>
   <% end %>
 </div>
+
+<span class="pagination tech-radar-pagination"><%= pagination_links_full @technology_pages %></span>

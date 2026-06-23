@@ -59,3 +59,8 @@
   border-bottom: 1px solid #ccc;
   padding-bottom: 0.5em;
 }
+
+.tech-radar-pagination {
+  margin-top: 2em;
+  text-align: center;
+}

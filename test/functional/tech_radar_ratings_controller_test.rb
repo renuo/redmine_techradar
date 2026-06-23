@@ -47,12 +47,12 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
                   save_tech_radar_rating_path(@t1), count: 0
   end
 
-  def test_index_orders_technologies_alphabetically
+  def test_index_orders_technologies_by_id
     get :index
 
     rows = css_select('.tech-radar-ratings form .tech-radar-rating-name')
 
-    assert_equal %w[Rails Ruby], rows.map { |span| span.text.strip }
+    assert_equal %w[Ruby Rails], rows.map { |span| span.text.strip }
   end
 
   def test_index_preselects_only_the_rated_rows
@@ -67,6 +67,24 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
                   save_tech_radar_rating_path(@t2), count: 0
   end
 
+  def test_index_paginates_technologies
+    with_settings per_page_options: '1,25,50' do
+      get :index, params: { per_page: 1, page: 2 }
+    end
+
+    assert_response :success
+    assert_select '.tech-radar-rating-name', text: 'Rails'
+    assert_select '.tech-radar-rating-name', text: 'Ruby', count: 0
+  end
+
+  def test_index_renders_pagination_controls_for_multiple_pages
+    with_settings per_page_options: '1,25,50' do
+      get :index, params: { per_page: 1 }
+    end
+
+    assert_select 'span.pagination a', text: '2'
+  end
+
   def test_save_creates_rating_and_redirects
     patch :save, params: { technology_id: @t1.id,
                            rating: { can_level: 'advanced', want_level: 'yes' } }
@@ -76,6 +94,13 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
 
     assert_equal 'advanced', rating.can_level
     assert_equal 'yes', rating.want_level
+  end
+
+  def test_save_preserves_the_current_page
+    patch :save, params: { technology_id: @t1.id, page: 2,
+                           rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_redirected_to tech_radar_ratings_path(page: 2)
   end
 
   def test_save_updates_existing_rating_without_adding_a_row
