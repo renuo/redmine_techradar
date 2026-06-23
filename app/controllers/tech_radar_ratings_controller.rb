@@ -5,7 +5,7 @@ class TechRadarRatingsController < ApplicationController
   before_action :authorize_global
 
   def index
-    @technologies = TechRadar::Technology.order(:name)
+    @technology_pages, @technologies = paginate(TechRadar::Technology.order(:id))
     @ratings = TechRadar::Rating.where(user: User.current).index_by(&:technology_id)
   end
 
@@ -17,7 +17,7 @@ class TechRadarRatingsController < ApplicationController
     return head :unprocessable_entity unless levels
 
     TechRadar::Rating.record_for(User.current, technology, *levels)
-    redirect_to tech_radar_ratings_path
+    redirect_to tech_radar_ratings_path(page: params[:page])
   end
 
   def show
