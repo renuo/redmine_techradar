@@ -4,7 +4,7 @@ class TechRadarRatingsController < ApplicationController
   before_action :require_login
   before_action :authorize_global
   before_action :set_technology, only: [:show, :update]
-  # Browsers cache the card and show a stale one on "back", so we force a fresh request.
+  # `no-store` disables bfcache so "back" refetches saved state instead of a stale snapshot.
   after_action :prevent_caching, only: [:index, :show]
 
   def index
