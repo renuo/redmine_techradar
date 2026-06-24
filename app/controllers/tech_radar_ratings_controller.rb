@@ -4,11 +4,9 @@ class TechRadarRatingsController < ApplicationController
   before_action :require_login
   before_action :authorize_global
   before_action :set_technology, only: [:show, :update]
-  # `no-store` disables bfcache so "back" refetches saved state instead of a stale snapshot.
-  after_action :prevent_caching, only: [:index, :show]
 
   def index
-    technology = TechRadar::Technology.next_unrated(User.current)
+    technology = rating_queue.first_unrated
     return render :show unless technology
 
     redirect_to tech_radar_rate_technology_path(technology)
@@ -16,7 +14,8 @@ class TechRadarRatingsController < ApplicationController
 
   def show
     @rating = TechRadar::Rating.find_by(user: User.current, technology: @technology)
-    @next_unrated = TechRadar::Technology.next_unrated(User.current, @technology)
+    @previous = rating_queue.previous(@technology)
+    @following = rating_queue.following(@technology)
   end
 
   def update
@@ -31,9 +30,9 @@ class TechRadarRatingsController < ApplicationController
     TechRadar::Rating.find_or_initialize_by(user: User.current, technology: @technology)
                      .update!(can_level: can_level, want_level: want_level)
 
-    next_unrated = TechRadar::Technology.next_unrated(User.current, @technology)
-    if next_unrated
-      redirect_to tech_radar_rate_technology_path(next_unrated)
+    following = rating_queue.following(@technology)
+    if following
+      redirect_to tech_radar_rate_technology_path(following)
     else
       redirect_to tech_radar_rating_path
     end
@@ -41,12 +40,12 @@ class TechRadarRatingsController < ApplicationController
 
   private
 
+  def rating_queue
+    @rating_queue ||= TechRadar::RatingQueue.new(User.current)
+  end
+
   def set_technology
     @technology = TechRadar::Technology.find_by(id: params[:technology_id])
     head :not_found unless @technology
-  end
-
-  def prevent_caching
-    response.headers['Cache-Control'] = 'no-store'
   end
 end

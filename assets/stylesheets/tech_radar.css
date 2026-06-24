@@ -16,6 +16,7 @@
   border: 0;
   font: inherit;
   color: black;
+  text-decoration: none;
   vertical-align: middle;
   cursor: pointer;
 }

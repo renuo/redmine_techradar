@@ -1,10 +1,8 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['form', 'canField', 'wantField', 'canButton', 'wantButton', 'forward', 'back']
+  static targets = ['form', 'canField', 'wantField', 'canButton', 'wantButton', 'back', 'next']
   static values = {
-    basePath: String,
-    skipUrl: String,
     canLevel: String,
     wantLevel: String
   }
@@ -14,41 +12,10 @@ export default class extends Controller {
     this.boundKeydown = this.handleKeydown.bind(this)
     document.addEventListener('keydown', this.boundKeydown)
     this.refreshHighlights()
-    if (this.hasBackTarget) this.backTarget.hidden = !this.canGoBack()
-    if (this.hasForwardTarget) this.forwardTarget.hidden = !(this.canGoForward() || this.skipUrlValue)
   }
 
   disconnect() {
     document.removeEventListener('keydown', this.boundKeydown)
-  }
-
-  canGoBack() {
-    if (!document.referrer) return false
-    try {
-      const url = new URL(document.referrer)
-      return url.origin === window.location.origin &&
-             url.pathname.startsWith(this.basePathValue)
-    } catch {
-      return false
-    }
-  }
-
-  back() {
-    window.history.back()
-  }
-
-  // "Forward" returns through the cards we backed away from, toward where we started.
-  // Only when there is nothing ahead in history do we skip to the next unrated card.
-  forward() {
-    if (this.canGoForward()) {
-      window.history.forward()
-    } else if (this.skipUrlValue) {
-      window.location.assign(this.skipUrlValue)
-    }
-  }
-
-  canGoForward() {
-    return Boolean(window.navigation && window.navigation.canGoForward)
   }
 
   selectCan(event) {
@@ -96,12 +63,12 @@ export default class extends Controller {
 
     if (event.key === 'ArrowRight') {
       event.preventDefault()
-      if (this.hasForwardTarget && !this.forwardTarget.hidden) this.forward()
+      if (this.hasNextTarget) this.nextTarget.click()
       return
     }
     if (event.key === 'ArrowLeft') {
       event.preventDefault()
-      if (this.hasBackTarget && !this.backTarget.hidden) this.back()
+      if (this.hasBackTarget) this.backTarget.click()
       return
     }
 

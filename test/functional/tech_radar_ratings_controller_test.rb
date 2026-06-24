@@ -53,18 +53,20 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     assert_select 'button.previous', count: 0
   end
 
-  def test_show_sets_skip_url_to_next_unrated
+  def test_show_links_next_to_following_card_and_omits_back_on_first
     get :show, params: { technology_id: @t1.id }
 
-    assert_select ".tech-radar-card[data-rating-card-skip-url-value=?]",
+    assert_select "a[data-rating-card-target='next'][href=?]",
                   tech_radar_rate_technology_path(@t2)
+    assert_select "a[data-rating-card-target='back']", count: 0
   end
 
-  def test_show_omits_skip_url_on_last_unrated
+  def test_show_links_back_to_previous_card_and_omits_next_on_last
     get :show, params: { technology_id: @t2.id }
 
-    assert_select ".tech-radar-card[data-rating-card-skip-url-value]", count: 0
-    assert_select "button[data-rating-card-target='back'][hidden]"
+    assert_select "a[data-rating-card-target='back'][href=?]",
+                  tech_radar_rate_technology_path(@t1)
+    assert_select "a[data-rating-card-target='next']", count: 0
   end
 
   def test_show_returns_not_found_for_unknown_technology
@@ -73,7 +75,7 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     assert_response :not_found
   end
 
-  def test_update_persists_rating_and_redirects_to_next_unrated
+  def test_update_persists_rating_and_redirects_to_following_card
     patch :update, params: { technology_id: @t1.id,
                              rating: { can_level: 'advanced', want_level: 'yes' } }
 
@@ -84,7 +86,17 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     assert_equal 'yes', rating.want_level
   end
 
-  def test_update_on_last_unrated_redirects_to_entry
+  def test_update_advances_to_following_card_even_when_it_is_already_rated
+    TechRadar::Rating.create!(user: @admin, technology: @t2,
+                              can_level: :beginner, want_level: :no)
+
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_redirected_to tech_radar_rate_technology_path(@t2)
+  end
+
+  def test_update_on_last_card_redirects_to_entry
     patch :update, params: { technology_id: @t2.id,
                              rating: { can_level: 'beginner', want_level: 'no' } }
 

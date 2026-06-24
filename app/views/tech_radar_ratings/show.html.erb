@@ -1,10 +1,7 @@
 <%= render 'tech_radar/nav' %>
 
 <% if @technology %>
-  <div class="tech-radar-card"
-       data-controller="rating-card"
-       data-rating-card-base-path-value="<%= tech_radar_rating_path %>"
-       <% if @next_unrated %>data-rating-card-skip-url-value="<%= tech_radar_rate_technology_path(@next_unrated) %>"<% end %>>
+  <div class="tech-radar-card" data-controller="rating-card">
     <h2><%= @technology.name %></h2>
 
     <%= form_with url: tech_radar_rate_technology_path(@technology), method: :patch,
@@ -43,20 +40,16 @@
       </fieldset>
     <% end %>
 
-    <button type="button"
-            class="tech-radar-card-nav"
-            data-action="click->rating-card#back"
-            data-rating-card-target="back"
-            hidden>
-      <%= t('tech_radar.rate.back') %>
-    </button>
-    <button type="button"
-            class="tech-radar-card-nav"
-            data-action="click->rating-card#forward"
-            data-rating-card-target="forward"
-            hidden>
-      <%= t('tech_radar.rate.skip') %>
-    </button>
+    <% if @previous %>
+      <%= link_to t('tech_radar.rate.back'), tech_radar_rate_technology_path(@previous),
+                  class: 'tech-radar-card-nav',
+                  data: { rating_card_target: 'back' } %>
+    <% end %>
+    <% if @following %>
+      <%= link_to t('tech_radar.rate.next'), tech_radar_rate_technology_path(@following),
+                  class: 'tech-radar-card-nav',
+                  data: { rating_card_target: 'next' } %>
+    <% end %>
   </div>
 <% else %>
   <div class="tech-radar-card-done">

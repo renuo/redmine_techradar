@@ -44,25 +44,25 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     assert_equal [{ can_level: 'advanced', want_level: 'yes' }], rating_values_for(@t1)
   end
 
-  def test_skip_advances_without_persisting
+  def test_next_advances_without_persisting
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
 
     assert_selector 'h2', text: 'Ruby'
-    click_button 'Skip'
+    click_link 'Next'
 
     assert_selector 'h2', text: 'Rails'
     assert_empty rating_values_for(@t1)
   end
 
-  def test_back_hidden_on_first_technology
+  def test_back_absent_on_first_technology
     log_user('admin', 'admin')
 
     visit '/tech_radar/rate'
 
     assert_selector 'h2', text: 'Ruby'
-    assert_no_button 'Back' # no history yet, so the back button stays hidden
+    assert_no_link 'Back' # first technology, nothing comes before it
   end
 
   def test_back_shows_previously_chosen_rating
@@ -73,7 +73,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button '1. No'
 
     assert_selector 'h2', text: 'Rails'
-    click_button 'Back'
+    click_link 'Back'
 
     assert_selector 'h2', text: 'Ruby'
     assert_equal %w[beginner no], all('button.previous').pluck('data-level').sort
@@ -87,7 +87,7 @@ class RatingWorkflowTest < ApplicationSystemTestCase
     click_button '1. No'
 
     assert_selector 'h2', text: 'Rails'
-    click_button 'Back'
+    click_link 'Back'
 
     find('h2', text: 'Ruby')
 
@@ -120,29 +120,21 @@ class RatingWorkflowTest < ApplicationSystemTestCase
 
     find('h2', text: 'Go')
 
-    # Walk back through every rated card, then forward again.
-    # Each revisited card must show its saved rating, not just the first one.
     shown = {}
-    page.go_back
-    shown['Vue back'] = previous_levels('Vue')
-    page.go_back
-    shown['Rails back'] = previous_levels('Rails')
-    page.go_back
-    shown['Ruby back'] = previous_levels('Ruby')
-    page.go_forward
-    shown['Rails forward'] = previous_levels('Rails')
-    page.go_forward
-    shown['Vue forward'] = previous_levels('Vue')
+    click_link 'Back'
+    shown['Vue'] = previous_levels('Vue')
+    click_link 'Back'
+    shown['Rails'] = previous_levels('Rails')
+    click_link 'Back'
+    shown['Ruby'] = previous_levels('Ruby')
 
     assert_equal({
-                   'Vue back' => %w[professional yes], 'Rails back' => %w[advanced yes],
-                   'Ruby back' => %w[beginner no], 'Rails forward' => %w[advanced yes],
-                   'Vue forward' => %w[professional yes]
+                   'Vue' => %w[professional yes], 'Rails' => %w[advanced yes],
+                   'Ruby' => %w[beginner no]
                  }, shown)
   end
 
-  # Right arrow walks forward through history, not to the next unrated card like Skip.
-  def test_forward_key_walks_history_instead_of_skipping
+  def test_arrow_keys_navigate_back_and_next
     @t3 = TechRadar::Technology.create!(name: 'Vue')
     @t4 = TechRadar::Technology.create!(name: 'Go')
     log_user('admin', 'admin')
