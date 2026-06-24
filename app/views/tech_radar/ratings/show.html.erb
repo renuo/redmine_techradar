@@ -1,6 +1,6 @@
 <%= render 'tech_radar/nav' %>
 
-<turbo-frame id="rating-card">
+<%= turbo_frame_tag 'rating-card' do %>
   <% if @technology %>
   <div class="tech-radar-card"
        data-controller="rating-card"
@@ -56,4 +56,4 @@
     <p><%= t('tech_radar.rate.all_rated') %></p>
   </div>
   <% end %>
-</turbo-frame>
+<% end %>

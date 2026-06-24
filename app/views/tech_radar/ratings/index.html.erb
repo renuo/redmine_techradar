@@ -16,7 +16,7 @@
 
   <% @technologies.each do |technology| %>
     <% rating = @ratings[technology.id] %>
-    <turbo-frame id="rating-row-<%= technology.id %>">
+    <%= turbo_frame_tag technology do %>
       <%= form_with url: save_tech_radar_rating_path(technology, page: params[:page]), method: :patch,
                     class: 'tech-radar-rating-row', data: { controller: 'rating-row' } do |f| %>
         <span class="tech-radar-rating-name"><%= technology.name %></span>
@@ -27,7 +27,7 @@
                      { include_blank: true, selected: rating&.want_level },
                      data: { rating_row_target: 'field', action: 'change->rating-row#submitIfReady' } %>
       <% end %>
-    </turbo-frame>
+    <% end %>
   <% end %>
 </div>
 

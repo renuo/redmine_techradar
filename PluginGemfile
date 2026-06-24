@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem "turbo-rails"
+
 group :development, :test do
   gem "rubocop-minitest", require: false
 end
