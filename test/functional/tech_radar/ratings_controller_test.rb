@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../test_helper'
+require_relative '../../test_helper'
 
-class TechRadarRatingsControllerTest < Redmine::ControllerTest
-  tests TechRadarRatingsController
+class TechRadar::RatingsControllerTest < Redmine::ControllerTest
+  tests TechRadar::RatingsController
 
   fixtures :users
 
