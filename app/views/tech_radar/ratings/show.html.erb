@@ -1,6 +1,7 @@
 <%= render 'tech_radar/nav' %>
 
-<% if @technology %>
+<turbo-frame id="rating-card">
+  <% if @technology %>
   <div class="tech-radar-card"
        data-controller="rating-card"
        data-rating-card-previous-can-level-value="<%= @rating&.can_level %>"
@@ -54,4 +55,5 @@
   <div class="tech-radar-card-done">
     <p><%= t('tech_radar.rate.all_rated') %></p>
   </div>
-<% end %>
+  <% end %>
+</turbo-frame>
