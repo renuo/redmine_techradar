@@ -45,7 +45,6 @@ class TechRadarRatingsController < ApplicationController
   end
 
   def set_technology
-    @technology = TechRadar::Technology.find_by(id: params[:technology_id])
-    head :not_found unless @technology
+    @technology = TechRadar::Technology.find(params[:technology_id])
   end
 end
