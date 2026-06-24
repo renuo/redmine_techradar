@@ -5,8 +5,7 @@ pin_all_from File.expand_path('../assets/javascripts', __dir__),
              to: 'plugin_assets/redmine_techradar',
              preload: true
 
-pin '@hotwired/turbo',
-    to: 'https://ga.jspm.io/npm:@hotwired/turbo@8.0.23/dist/turbo.es2017-esm.js'
+pin '@hotwired/turbo-rails', to: 'turbo.min.js', preload: true
 
 pin 'chart.js/auto',
     to: 'https://ga.jspm.io/npm:chart.js@4.5.1/auto/auto.js'

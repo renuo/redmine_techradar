@@ -1,4 +1,4 @@
-import * as Turbo from '@hotwired/turbo'
+import { Turbo } from '@hotwired/turbo-rails'
 import RatingCardController from 'redmine_techradar/rating_card_controller'
 import RatingRowController from 'redmine_techradar/rating_row_controller'
 import ScatterChartController from 'redmine_techradar/scatter_chart_controller'
