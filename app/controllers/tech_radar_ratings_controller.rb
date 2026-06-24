@@ -46,5 +46,7 @@ class TechRadarRatingsController < ApplicationController
 
   def set_technology
     @technology = TechRadar::Technology.find(params[:technology_id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
   end
 end
