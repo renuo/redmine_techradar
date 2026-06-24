@@ -15,88 +15,143 @@ class TechRadarRatingsControllerTest < Redmine::ControllerTest
     @t2 = TechRadar::Technology.create!(name: 'Rails')
   end
 
-  def test_show_renders_first_unrated_technology
+  def test_index_redirects_to_first_unrated_technology
     TechRadar::Rating.create!(user: @admin, technology: @t1,
                               can_level: :advanced, want_level: :yes)
 
-    get :show
+    get :index
 
-    assert_response :success
-    assert_select 'h2', text: 'Rails'
+    assert_redirected_to tech_radar_rate_technology_path(@t2)
   end
 
-  def test_show_renders_done_message_when_all_rated
+  def test_index_renders_done_when_all_rated
     [@t1, @t2].each do |t|
-      TechRadar::Rating.create!(user_id: @admin.id, technology: t,
+      TechRadar::Rating.create!(user: @admin, technology: t,
                                 can_level: :unknown, want_level: :neutral)
     end
 
-    get :show
+    get :index
 
-    assert_response :success
     assert_select '.tech-radar-card-done'
   end
 
-  def test_update_persists_rating_and_redirects_to_next_card
-    patch :update, params: { rating: { can_level: 'advanced', want_level: 'yes' } }
+  def test_show_renders_previous_highlight_on_rated_levels
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
 
-    assert_redirected_to tech_radar_rating_path
-    rating = TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+    get :show, params: { technology_id: @t1.id }
+
+    assert_select ".tech-radar-card-can button.previous[data-level='advanced']"
+    assert_select ".tech-radar-card-want button.previous[data-level='yes']"
+    assert_select 'button.previous', count: 2
+  end
+
+  def test_show_renders_no_previous_highlight_when_unrated
+    get :show, params: { technology_id: @t1.id }
+
+    assert_response :success
+    assert_select 'button.previous', count: 0
+  end
+
+  def test_show_links_next_to_following_card_and_omits_back_on_first
+    get :show, params: { technology_id: @t1.id }
+
+    assert_select "a[data-rating-card-target='next'][href=?]",
+                  tech_radar_rate_technology_path(@t2)
+    assert_select "a[data-rating-card-target='back']", count: 0
+  end
+
+  def test_show_links_back_to_previous_card_and_omits_next_on_last
+    get :show, params: { technology_id: @t2.id }
+
+    assert_select "a[data-rating-card-target='back'][href=?]",
+                  tech_radar_rate_technology_path(@t1)
+    assert_select "a[data-rating-card-target='next']", count: 0
+  end
+
+  def test_show_returns_not_found_for_unknown_technology
+    get :show, params: { technology_id: 0 }
+
+    assert_response :not_found
+  end
+
+  def test_update_persists_rating_and_redirects_to_following_card
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_redirected_to tech_radar_rate_technology_path(@t2)
+    rating = TechRadar::Rating.find_by(user: @admin, technology: @t1)
 
     assert_equal 'advanced', rating.can_level
     assert_equal 'yes', rating.want_level
   end
 
+  def test_update_advances_to_following_card_even_when_it_is_already_rated
+    TechRadar::Rating.create!(user: @admin, technology: @t2,
+                              can_level: :beginner, want_level: :no)
+
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'advanced', want_level: 'yes' } }
+
+    assert_redirected_to tech_radar_rate_technology_path(@t2)
+  end
+
+  def test_update_on_last_card_redirects_to_entry
+    patch :update, params: { technology_id: @t2.id,
+                             rating: { can_level: 'beginner', want_level: 'no' } }
+
+    assert_redirected_to tech_radar_rating_path
+  end
+
+  def test_update_overwrites_existing_rating_keeping_one_row
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :beginner, want_level: :no)
+
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'professional', want_level: 'yes' } }
+
+    ratings = TechRadar::Rating.where(user: @admin, technology: @t1)
+
+    assert_equal 1, ratings.count
+    assert_equal 'professional', ratings.first.can_level
+    assert_equal 'yes', ratings.first.want_level
+  end
+
   def test_update_returns_unprocessable_entity_for_unknown_can_level
-    patch :update, params: { rating: { can_level: 'wizard', want_level: 'yes' } }
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'wizard', want_level: 'yes' } }
 
     assert_response :unprocessable_entity
-    assert_nil TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+    assert_nil TechRadar::Rating.find_by(user: @admin, technology: @t1)
   end
 
   def test_update_returns_unprocessable_entity_for_unknown_want_level
-    patch :update, params: { rating: { can_level: 'advanced', want_level: 'maybe' } }
+    patch :update, params: { technology_id: @t1.id,
+                             rating: { can_level: 'advanced', want_level: 'maybe' } }
 
     assert_response :unprocessable_entity
-    assert_nil TechRadar::Rating.find_by(user_id: @admin.id, technology: @t1)
+    assert_nil TechRadar::Rating.find_by(user: @admin, technology: @t1)
   end
 
-  def test_skip_advances_without_persisting
-    post :skip
+  def test_update_returns_not_found_for_unknown_technology
+    patch :update, params: { technology_id: 0,
+                             rating: { can_level: 'advanced', want_level: 'yes' } }
 
-    assert_redirected_to tech_radar_rating_path
-    assert_equal 0, TechRadar::Rating.where(user_id: @admin.id).count
+    assert_response :not_found
   end
 
-  def test_skip_does_not_advance_past_last_unrated_technology
-    TechRadar::Rating.create!(user_id: @admin.id, technology: @t1,
-                              can_level: :unknown, want_level: :neutral)
+  def test_index_forbidden_for_user_without_rate_permission
+    @request.session[:user_id] = User.find_by(login: 'jsmith').id
 
-    post :skip
+    get :index
 
-    assert_redirected_to tech_radar_rating_path
-
-    get :show
-
-    assert_select 'h2', text: 'Rails'
-    assert_select '.tech-radar-card-done', count: 0
-  end
-
-  def test_back_returns_to_previous_card
-    patch :update, params: { rating: { can_level: 'beginner', want_level: 'no' } }
-    post :back
-
-    assert_redirected_to tech_radar_rating_path
-    get :show
-
-    assert_select 'h2', text: 'Ruby'
+    assert_response :forbidden
   end
 
   def test_show_forbidden_for_user_without_rate_permission
-    jsmith = User.find_by(login: 'jsmith')
-    @request.session[:user_id] = jsmith.id
+    @request.session[:user_id] = User.find_by(login: 'jsmith').id
 
-    get :show
+    get :show, params: { technology_id: @t1.id }
 
     assert_response :forbidden
   end

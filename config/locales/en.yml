@@ -28,6 +28,6 @@ en:
         neutral: "Neutral"
         probably_yes: "Rather yes"
         "yes": "Yes"
-      skip: "Skip"
+      next: "Next"
       back: "Back"
       all_rated: "You've rated every technology. Thanks!"

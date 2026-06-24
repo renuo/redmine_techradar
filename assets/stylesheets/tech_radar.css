@@ -10,6 +10,17 @@
   margin-bottom: 1em;
 }
 
+.tech-radar-card-nav {
+  margin: 0 1em;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: black;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
 .tech-radar-card button[data-level].previous {
   border: 2px dashed #6090c0;
   background: #f0f6fc;
