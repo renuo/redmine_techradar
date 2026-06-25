@@ -15,7 +15,7 @@ module TechRadar
       technology = rating_queue.first_unrated
       return render :show unless technology
 
-      redirect_to tech_radar_rate_technology_path(technology)
+      redirect_to tech_radar_rating_path(technology)
     end
 
     def save
@@ -43,9 +43,9 @@ module TechRadar
 
       following = rating_queue.following(@technology)
       if following
-        redirect_to tech_radar_rate_technology_path(following)
+        redirect_to tech_radar_rating_path(following)
       else
-        redirect_to tech_radar_rating_path
+        redirect_to rate_tech_radar_ratings_path
       end
     end
 

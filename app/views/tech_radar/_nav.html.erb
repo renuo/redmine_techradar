@@ -8,7 +8,7 @@
     <% end %>
     <% if User.current.allowed_to?(:rate_technologies, nil, global: true) %>
       <li>
-        <%= link_to t('tech_radar.nav.rate'), tech_radar_rating_path,
+        <%= link_to t('tech_radar.nav.rate'), rate_tech_radar_ratings_path,
                     class: ('selected' if controller_name == 'tech_radar_ratings') %>
       </li>
       <li>

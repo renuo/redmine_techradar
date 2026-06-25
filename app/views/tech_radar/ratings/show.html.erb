@@ -4,7 +4,7 @@
   <div class="tech-radar-card" data-controller="rating-card">
     <h2><%= @technology.name %></h2>
 
-    <%= form_with url: tech_radar_rate_technology_path(@technology), method: :patch,
+    <%= form_with url: tech_radar_rating_path(@technology), method: :patch,
                   data: { rating_card_target: 'form' } do |f| %>
       <%= f.hidden_field 'rating[can_level]',
                          value: '',
@@ -41,12 +41,12 @@
     <% end %>
 
     <% if @previous %>
-      <%= link_to t('tech_radar.rate.back'), tech_radar_rate_technology_path(@previous),
+      <%= link_to t('tech_radar.rate.back'), tech_radar_rating_path(@previous),
                   class: 'tech-radar-card-nav',
                   data: { rating_card_target: 'back' } %>
     <% end %>
     <% if @following %>
-      <%= link_to t('tech_radar.rate.next'), tech_radar_rate_technology_path(@following),
+      <%= link_to t('tech_radar.rate.next'), tech_radar_rating_path(@following),
                   class: 'tech-radar-card-nav',
                   data: { rating_card_target: 'next' } %>
     <% end %>

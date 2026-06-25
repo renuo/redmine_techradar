@@ -145,7 +145,7 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
 
     get :rate
 
-    assert_redirected_to tech_radar_rate_technology_path(@t2)
+    assert_redirected_to tech_radar_rating_path(@t2)
   end
 
   def test_rate_renders_done_when_all_rated
@@ -181,7 +181,7 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     get :show, params: { technology_id: @t1.id }
 
     assert_select "a[data-rating-card-target='next'][href=?]",
-                  tech_radar_rate_technology_path(@t2)
+                  tech_radar_rating_path(@t2)
     assert_select "a[data-rating-card-target='back']", count: 0
   end
 
@@ -189,7 +189,7 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     get :show, params: { technology_id: @t2.id }
 
     assert_select "a[data-rating-card-target='back'][href=?]",
-                  tech_radar_rate_technology_path(@t1)
+                  tech_radar_rating_path(@t1)
     assert_select "a[data-rating-card-target='next']", count: 0
   end
 
@@ -203,7 +203,7 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     patch :update, params: { technology_id: @t1.id,
                              rating: { can_level: 'advanced', want_level: 'yes' } }
 
-    assert_redirected_to tech_radar_rate_technology_path(@t2)
+    assert_redirected_to tech_radar_rating_path(@t2)
     rating = TechRadar::Rating.find_by(user: @admin, technology: @t1)
 
     assert_equal 'advanced', rating.can_level
@@ -217,14 +217,14 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     patch :update, params: { technology_id: @t1.id,
                              rating: { can_level: 'advanced', want_level: 'yes' } }
 
-    assert_redirected_to tech_radar_rate_technology_path(@t2)
+    assert_redirected_to tech_radar_rating_path(@t2)
   end
 
   def test_update_on_last_card_redirects_to_entry
     patch :update, params: { technology_id: @t2.id,
                              rating: { can_level: 'beginner', want_level: 'no' } }
 
-    assert_redirected_to tech_radar_rating_path
+    assert_redirected_to rate_tech_radar_ratings_path
   end
 
   def test_update_overwrites_existing_rating_keeping_one_row

@@ -6,7 +6,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_rate_via_click_persists_and_advances
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     assert_selector 'h2', text: 'Ruby'
     click_button '3. Advanced'
@@ -19,7 +19,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_rate_via_keyboard_persists_and_advances
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     assert_selector 'h2', text: 'Ruby'
     find('body').send_keys('3', '5')
@@ -31,7 +31,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_next_advances_without_persisting
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     assert_selector 'h2', text: 'Ruby'
     click_link 'Next'
@@ -43,7 +43,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_back_absent_on_first_technology
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     assert_selector 'h2', text: 'Ruby'
     assert_no_link 'Back' # first technology, nothing comes before it
@@ -52,7 +52,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_back_shows_previously_chosen_rating
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
     click_button '2. Beginner'
     click_button '1. No'
 
@@ -66,7 +66,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_re_rate_after_back_keeps_one_row_with_new_values
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
     click_button '2. Beginner'
     click_button '1. No'
 
@@ -88,7 +88,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
     @t4 = TechRadar::Technology.create!(name: 'Go')
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     find('h2', text: 'Ruby')
     click_button '2. Beginner'
@@ -123,7 +123,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
     @t4 = TechRadar::Technology.create!(name: 'Go')
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
 
     find('h2', text: 'Ruby')
     find('body').send_keys('2', '1')
@@ -151,7 +151,7 @@ class RatingWorkflowTest < TechRadarSystemTestCase
   def test_done_view_shown_after_all_technologies_rated
     log_user('admin', 'admin')
 
-    visit '/tech_radar/rate'
+    visit '/tech_radar/ratings/rate'
     click_button '3. Advanced'
     click_button '5. Yes'
 
