@@ -14,7 +14,7 @@ export default class extends Controller {
   connect() {
     const data = {
       datasets: [{
-        data: this.pointsValue.map((p) => ({ x: p.want - 3, y: p.can - 2.5, label: p.name })),
+        data: this.pointsValue.map((p) => ({ x: p.want, y: p.can, label: p.name })),
         backgroundColor: '#2a8a4a',
         clip: false
       }]

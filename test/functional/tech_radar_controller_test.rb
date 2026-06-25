@@ -37,7 +37,7 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
     points = JSON.parse(canvas['data-scatter-chart-points-value'])
 
-    assert_equal [{ 'name' => 'Ruby', 'can' => 3.5, 'want' => 4.5 }], points
+    assert_equal [{ 'name' => 'Ruby', 'can' => 1.0, 'want' => 1.5 }], points
   end
 
   def test_index_redirects_anonymous_user_to_login
@@ -67,7 +67,7 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
     points = JSON.parse(canvas['data-scatter-chart-points-value'])
 
-    assert_equal [{ 'name' => 'Ruby', 'can' => 3.0, 'want' => 5.0 }], points
+    assert_equal [{ 'name' => 'Ruby', 'can' => 0.5, 'want' => 2.0 }], points
   end
 
   def test_index_filter_dropdown_lists_only_users_with_ratings
@@ -116,8 +116,8 @@ class TechRadarControllerTest < Redmine::ControllerTest
     points = JSON.parse(canvas['data-scatter-chart-points-value']).sort_by { |p| p['name'] }
 
     assert_equal [
-      { 'name' => 'admin',  'can' => 3.0, 'want' => 5.0 },
-      { 'name' => 'jsmith', 'can' => 4.0, 'want' => 4.0 }
+      { 'name' => 'admin',  'can' => 0.5, 'want' => 2.0 },
+      { 'name' => 'jsmith', 'can' => 1.5, 'want' => 1.0 }
     ], points
   end
 
