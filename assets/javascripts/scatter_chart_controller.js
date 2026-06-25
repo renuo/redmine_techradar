@@ -22,7 +22,7 @@ export default class extends Controller {
 
     // The four can levels; 0 carries no label — it only draws the centre line between them.
     const canTickValues = [-1.5, -0.5, 0.5, 1.5]
-    const zeroLine = (ctx) => (ctx.tick?.value === 0 ? '#999999' : 'rgba(0, 0, 0, 0.1)')
+    const gridColor = (ctx) => (ctx.tick?.value === 0 ? '#999999' : 'rgba(0, 0, 0, 0.1)')
 
     this.chart = new Chart(this.element, {
       type: 'scatter',
@@ -37,7 +37,7 @@ export default class extends Controller {
             title: { display: true, text: this.wantLabelValue },
             min: -2,
             max: 2,
-            grid: { color: zeroLine },
+            grid: { color: gridColor },
             ticks: {
               stepSize: 1,
               callback: (value) => this.wantTicksValue[value + 2]
@@ -47,7 +47,7 @@ export default class extends Controller {
             title: { display: true, text: this.canLabelValue },
             min: -2,
             max: 2,
-            grid: { color: zeroLine },
+            grid: { color: gridColor },
             afterBuildTicks: (axis) => {
               // Add 0 so the centre line is drawn
               axis.ticks = [...canTickValues, 0].sort((a, b) => a - b).map((value) => ({ value }))
