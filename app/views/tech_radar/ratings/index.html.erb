@@ -1,0 +1,27 @@
+<%= render 'tech_radar/nav' %>
+
+<h2><%= t('tech_radar.nav.my_ratings') %></h2>
+
+<div class="tech-radar-ratings">
+  <div class="tech-radar-rating-row tech-radar-rating-head">
+    <span class="tech-radar-rating-name"><%= t('tech_radar.ratings.technology') %></span>
+    <span class="tech-radar-rating-axis"><%= t('tech_radar.evaluation.can_axis') %></span>
+    <span class="tech-radar-rating-axis"><%= t('tech_radar.evaluation.want_axis') %></span>
+  </div>
+
+  <% @technologies.each do |technology| %>
+    <% rating = @ratings[technology.id] %>
+    <%= form_with url: tech_radar_rating_path(technology, page: params[:page], from: 'list'), method: :patch,
+                  class: 'tech-radar-rating-row', data: { controller: 'rating-row' } do |f| %>
+      <span class="tech-radar-rating-name"><%= technology.name %></span>
+      <%= f.select 'rating[can_level]', can_level_options,
+                   { include_blank: true, selected: rating&.can_level },
+                   data: { rating_row_target: 'field', action: 'change->rating-row#submitIfReady' } %>
+      <%= f.select 'rating[want_level]', want_level_options,
+                   { include_blank: true, selected: rating&.want_level },
+                   data: { rating_row_target: 'field', action: 'change->rating-row#submitIfReady' } %>
+    <% end %>
+  <% end %>
+</div>
+
+<span class="pagination tech-radar-pagination"><%= pagination_links_full @technology_pages %></span>

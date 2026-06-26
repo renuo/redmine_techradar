@@ -6,6 +6,9 @@ en:
     nav:
       evaluation: "Evaluation"
       rate: "Rate"
+      my_ratings: "My ratings"
+    ratings:
+      technology: "Technology"
     evaluation:
       can_axis: "Can"
       want_axis: "Want"

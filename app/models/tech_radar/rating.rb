@@ -10,6 +10,12 @@ module TechRadar
 
     validates :user_id, uniqueness: { scope: :technology_id }
 
+    def self.rate!(user, technology, can_level, want_level)
+      rating = find_or_initialize_by(user: user, technology: technology)
+      rating.update!(can_level: can_level, want_level: want_level)
+      rating
+    end
+
     def self.centroids_by_technology
       joins(:technology)
         .group('tech_radar_technologies.name')
