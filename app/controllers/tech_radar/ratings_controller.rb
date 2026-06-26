@@ -13,9 +13,7 @@ module TechRadar
 
     def rate
       technology = rating_queue.first_unrated
-      return render :show unless technology
-
-      redirect_to tech_radar_rating_path(technology)
+      redirect_to tech_radar_rating_path(technology) if technology
     end
 
     def show

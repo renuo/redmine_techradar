@@ -1,58 +1,52 @@
 <%= render 'tech_radar/nav' %>
 
-<% if @technology %>
-  <div class="tech-radar-card" data-controller="rating-card">
-    <h2><%= @technology.name %></h2>
+<div class="tech-radar-card" data-controller="rating-card">
+  <h2><%= @technology.name %></h2>
 
-    <%= form_with url: tech_radar_rating_path(@technology), method: :patch,
-                  data: { rating_card_target: 'form' } do |f| %>
-      <%= f.hidden_field 'rating[can_level]',
-                         value: '',
-                         data: { rating_card_target: 'canField' } %>
-      <%= f.hidden_field 'rating[want_level]',
-                         value: '',
-                         data: { rating_card_target: 'wantField' } %>
+  <%= form_with url: tech_radar_rating_path(@technology), method: :patch,
+                data: { rating_card_target: 'form' } do |f| %>
+    <%= f.hidden_field 'rating[can_level]',
+                       value: '',
+                       data: { rating_card_target: 'canField' } %>
+    <%= f.hidden_field 'rating[want_level]',
+                       value: '',
+                       data: { rating_card_target: 'wantField' } %>
 
-      <fieldset class="tech-radar-card-can">
-        <legend><%= t('tech_radar.rate.can_label') %></legend>
-        <% TechRadar::Rating.can_levels.each_key.with_index(1) do |key, i| %>
-          <button type="button"
-                  class="<%= 'previous' if @rating&.can_level == key %>"
-                  data-action="click->rating-card#selectCan"
-                  data-rating-card-target="canButton"
-                  data-level="<%= key %>">
-            <%= "#{i}. #{t("tech_radar.rate.can.#{key}")}" %>
-          </button>
-        <% end %>
-      </fieldset>
+    <fieldset class="tech-radar-card-can">
+      <legend><%= t('tech_radar.rate.can_label') %></legend>
+      <% TechRadar::Rating.can_levels.each_key.with_index(1) do |key, i| %>
+        <button type="button"
+                class="<%= 'previous' if @rating&.can_level == key %>"
+                data-action="click->rating-card#selectCan"
+                data-rating-card-target="canButton"
+                data-level="<%= key %>">
+          <%= "#{i}. #{t("tech_radar.rate.can.#{key}")}" %>
+        </button>
+      <% end %>
+    </fieldset>
 
-      <fieldset class="tech-radar-card-want">
-        <legend><%= t('tech_radar.rate.want_label') %></legend>
-        <% TechRadar::Rating.want_levels.each_key.with_index(1) do |key, i| %>
-          <button type="button"
-                  class="<%= 'previous' if @rating&.want_level == key %>"
-                  data-action="click->rating-card#selectWant"
-                  data-rating-card-target="wantButton"
-                  data-level="<%= key %>">
-            <%= "#{i}. #{t("tech_radar.rate.want.#{key}")}" %>
-          </button>
-        <% end %>
-      </fieldset>
-    <% end %>
+    <fieldset class="tech-radar-card-want">
+      <legend><%= t('tech_radar.rate.want_label') %></legend>
+      <% TechRadar::Rating.want_levels.each_key.with_index(1) do |key, i| %>
+        <button type="button"
+                class="<%= 'previous' if @rating&.want_level == key %>"
+                data-action="click->rating-card#selectWant"
+                data-rating-card-target="wantButton"
+                data-level="<%= key %>">
+          <%= "#{i}. #{t("tech_radar.rate.want.#{key}")}" %>
+        </button>
+      <% end %>
+    </fieldset>
+  <% end %>
 
-    <% if @previous %>
-      <%= link_to t('tech_radar.rate.back'), tech_radar_rating_path(@previous),
-                  class: 'tech-radar-card-nav',
-                  data: { rating_card_target: 'back' } %>
-    <% end %>
-    <% if @following %>
-      <%= link_to t('tech_radar.rate.next'), tech_radar_rating_path(@following),
-                  class: 'tech-radar-card-nav',
-                  data: { rating_card_target: 'next' } %>
-    <% end %>
-  </div>
-<% else %>
-  <div class="tech-radar-card-done">
-    <p><%= t('tech_radar.rate.all_rated') %></p>
-  </div>
-<% end %>
+  <% if @previous %>
+    <%= link_to t('tech_radar.rate.back'), tech_radar_rating_path(@previous),
+                class: 'tech-radar-card-nav',
+                data: { rating_card_target: 'back' } %>
+  <% end %>
+  <% if @following %>
+    <%= link_to t('tech_radar.rate.next'), tech_radar_rating_path(@following),
+                class: 'tech-radar-card-nav',
+                data: { rating_card_target: 'next' } %>
+  <% end %>
+</div>
