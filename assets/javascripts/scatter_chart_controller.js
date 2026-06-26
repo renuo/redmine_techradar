@@ -20,8 +20,8 @@ export default class extends Controller {
       }]
     }
 
-    // The four can levels; 0 carries no label — it only draws the centre line between them.
-    const canTickValues = [-1.5, -0.5, 0.5, 1.5]
+    // The four can levels; 0 carries no label — it only draws the centre line in the empty slot between them.
+    const canTickValues = [-2, -1, 1, 2]
     const gridColor = (ctx) => (ctx.tick?.value === 0 ? '#999999' : 'rgba(0, 0, 0, 0.1)')
 
     this.chart = new Chart(this.element, {

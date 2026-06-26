@@ -8,7 +8,9 @@ module TechRadar
     enum :can_level,  { unknown: 1, beginner: 2, advanced: 3, professional: 4 }
     enum :want_level, { no: 1, probably_no: 2, neutral: 3, probably_yes: 4, yes: 5 }
 
-    # Chart points are centred so the origin sits at the middle of each scale.
+    # Chart points share a square -2..2 grid on both axes. Want has a neutral
+    # level, so it maps linearly onto the grid. Can has no neutral level, so its
+    # four levels are spread onto -2, -1, 1, 2, leaving the centre (0) empty.
     CAN_CENTER  = (can_levels.values.min + can_levels.values.max) / 2.0
     WANT_CENTER = (want_levels.values.min + want_levels.values.max) / 2.0
 
@@ -54,9 +56,17 @@ module TechRadar
     end
 
     def self.centred_point(name, can, want)
-      { name: name, can: can.to_f - CAN_CENTER, want: want.to_f - WANT_CENTER }
+      { name: name, can: spread_can(can.to_f), want: want.to_f - WANT_CENTER }
     end
     private_class_method :centred_point
+
+    # Push the centred can value half a step away from the origin so the four
+    # levels land on -2, -1, 1, 2 and the centre stays empty.
+    def self.spread_can(value)
+      centred = value - CAN_CENTER
+      centred + (centred <=> 0) * 0.5
+    end
+    private_class_method :spread_can
 
     def self.users_with_ratings
       User.where(id: select(:user_id).distinct).order(:login)

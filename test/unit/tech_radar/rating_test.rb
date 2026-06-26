@@ -20,14 +20,14 @@ module TechRadar
     def test_centroids_by_technology_uses_single_rating_as_its_own_centroid
       Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
 
-      assert_equal [{ name: 'Ruby', can: 0.5, want: 2.0 }], Rating.centroids_by_technology
+      assert_equal [{ name: 'Ruby', can: 1.0, want: 2.0 }], Rating.centroids_by_technology
     end
 
     def test_centroids_by_technology_averages_multiple_ratings_per_technology
       Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
       Rating.create!(user: @jsmith, technology: @ruby, can_level: :professional, want_level: :probably_yes)
 
-      assert_equal [{ name: 'Ruby', can: 1.0, want: 1.5 }], Rating.centroids_by_technology
+      assert_equal [{ name: 'Ruby', can: 1.5, want: 1.5 }], Rating.centroids_by_technology
     end
 
     def test_centroids_by_technology_returns_one_entry_per_rated_technology
@@ -48,8 +48,8 @@ module TechRadar
       points = Rating.points_for_user(@admin.id).sort_by { |p| p[:name] }
 
       assert_equal [
-        { name: 'Rails', can: 1.5, want: 1.0 },
-        { name: 'Ruby',  can: 0.5, want: 2.0 }
+        { name: 'Rails', can: 2.0, want: 1.0 },
+        { name: 'Ruby',  can: 1.0, want: 2.0 }
       ], points
     end
 
@@ -57,7 +57,7 @@ module TechRadar
       Rating.create!(user: @admin,  technology: @ruby, can_level: :advanced, want_level: :yes)
       Rating.create!(user: @jsmith, technology: @ruby, can_level: :beginner, want_level: :neutral)
 
-      assert_equal [{ name: 'Ruby', can: 0.5, want: 2.0 }], Rating.points_for_user(@admin.id)
+      assert_equal [{ name: 'Ruby', can: 1.0, want: 2.0 }], Rating.points_for_user(@admin.id)
     end
 
     def test_points_for_technology_returns_empty_when_technology_has_no_ratings
@@ -71,8 +71,8 @@ module TechRadar
       points = Rating.points_for_technology(@ruby.id).sort_by { |p| p[:name] }
 
       assert_equal [
-        { name: 'admin',  can: 0.5, want: 2.0 },
-        { name: 'jsmith', can: 1.5, want: 1.0 }
+        { name: 'admin',  can: 1.0, want: 2.0 },
+        { name: 'jsmith', can: 2.0, want: 1.0 }
       ], points
     end
 
@@ -80,7 +80,7 @@ module TechRadar
       Rating.create!(user: @admin, technology: @ruby,  can_level: :advanced, want_level: :yes)
       Rating.create!(user: @admin, technology: @rails, can_level: :beginner, want_level: :neutral)
 
-      assert_equal [{ name: 'admin', can: 0.5, want: 2.0 }], Rating.points_for_technology(@ruby.id)
+      assert_equal [{ name: 'admin', can: 1.0, want: 2.0 }], Rating.points_for_technology(@ruby.id)
     end
 
     def test_users_with_ratings_returns_empty_without_ratings
