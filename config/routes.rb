@@ -8,6 +8,5 @@ get 'tech_radar', to: 'tech_radar#index', as: :tech_radar
 namespace :tech_radar do
   resources :ratings, only: [:index, :show, :update], param: :technology_id do
     get :rate, on: :collection
-    patch :save, on: :member
   end
 end

@@ -18,17 +18,6 @@ module TechRadar
       redirect_to tech_radar_rating_path(technology)
     end
 
-    def save
-      technology = TechRadar::Technology.find_by(id: params[:technology_id])
-      return head :not_found unless technology
-
-      levels = submitted_levels
-      return head :unprocessable_entity unless levels
-
-      TechRadar::Rating.rate!(User.current, technology, *levels)
-      redirect_to tech_radar_ratings_path(page: params[:page])
-    end
-
     def show
       @rating = TechRadar::Rating.find_by(user: User.current, technology: @technology)
       @previous = rating_queue.previous(@technology)
@@ -40,16 +29,20 @@ module TechRadar
       return head :unprocessable_entity unless levels
 
       TechRadar::Rating.rate!(User.current, @technology, *levels)
-
-      following = rating_queue.following(@technology)
-      if following
-        redirect_to tech_radar_rating_path(following)
-      else
-        redirect_to rate_tech_radar_ratings_path
-      end
+      redirect_to after_update_path
     end
 
     private
+
+    # The overview table and the card flow share this single update action; they
+    # only differ in where to go afterwards. The table sends `from=list` to
+    # return to the same page, the card flow advances to the next technology.
+    def after_update_path
+      return tech_radar_ratings_path(page: params[:page]) if params[:from] == 'list'
+
+      following = rating_queue.following(@technology)
+      following ? tech_radar_rating_path(following) : rate_tech_radar_ratings_path
+    end
 
     def submitted_levels
       rating_params = params[:rating]
