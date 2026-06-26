@@ -1,3 +1,8 @@
+.tech-radar-evaluation {
+  max-width: 75vh;
+  margin-inline: auto;
+}
+
 .tech-radar-card,
 .tech-radar-card-done {
   max-width: 480px;

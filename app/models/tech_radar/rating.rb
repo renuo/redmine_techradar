@@ -8,6 +8,12 @@ module TechRadar
     enum :can_level,  { unknown: 1, beginner: 2, advanced: 3, professional: 4 }
     enum :want_level, { no: 1, probably_no: 2, neutral: 3, probably_yes: 4, yes: 5 }
 
+    # Chart points share a square -2..2 grid on both axes. Want has a neutral
+    # level, so it maps linearly onto the grid. Can has no neutral level, so its
+    # four levels are spread onto -2, -1, 1, 2, leaving the centre (0) empty.
+    CAN_CENTER  = (can_levels.values.min + can_levels.values.max) / 2.0
+    WANT_CENTER = (want_levels.values.min + want_levels.values.max) / 2.0
+
     validates :user_id, uniqueness: { scope: :technology_id }
 
     def self.rate!(user, technology, can_level, want_level)
@@ -24,7 +30,7 @@ module TechRadar
           Arel.sql('AVG(can_level)'),
           Arel.sql('AVG(want_level)')
         )
-        .map { |name, can, want| { name: name, can: can.to_f, want: want.to_f } }
+        .map { |name, can, want| centred_point(name, can, want) }
     end
 
     def self.points_for_user(user_id)
@@ -35,7 +41,7 @@ module TechRadar
           Arel.sql('can_level AS can_raw'),
           Arel.sql('want_level AS want_raw')
         )
-        .map { |name, can, want| { name: name, can: can.to_f, want: want.to_f } }
+        .map { |name, can, want| centred_point(name, can, want) }
     end
 
     def self.points_for_technology(technology_id)
@@ -46,8 +52,21 @@ module TechRadar
           Arel.sql('can_level AS can_raw'),
           Arel.sql('want_level AS want_raw')
         )
-        .map { |login, can, want| { name: login, can: can.to_f, want: want.to_f } }
+        .map { |login, can, want| centred_point(login, can, want) }
     end
+
+    def self.centred_point(name, can, want)
+      { name: name, can: spread_can(can.to_f), want: want.to_f - WANT_CENTER }
+    end
+    private_class_method :centred_point
+
+    # Push the centred can value half a step away from the origin so the four
+    # levels land on -2, -1, 1, 2 and the centre stays empty.
+    def self.spread_can(value)
+      centred = value - CAN_CENTER
+      centred + (centred <=> 0) * 0.5
+    end
+    private_class_method :spread_can
 
     def self.users_with_ratings
       User.where(id: select(:user_id).distinct).order(:login)

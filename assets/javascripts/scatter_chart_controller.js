@@ -6,7 +6,9 @@ export default class extends Controller {
   static values = {
     points: Array,
     canLabel: String,
-    wantLabel: String
+    wantLabel: String,
+    canTicks: Array,
+    wantTicks: Array
   }
 
   connect() {
@@ -18,16 +20,42 @@ export default class extends Controller {
       }]
     }
 
+    // The four can levels; 0 carries no label — it only draws the centre line in the empty slot between them.
+    const canTickValues = [-2, -1, 1, 2]
+    const gridColor = (ctx) => (ctx.tick?.value === 0 ? '#999999' : 'rgba(0, 0, 0, 0.1)')
+
     this.chart = new Chart(this.element, {
       type: 'scatter',
       data,
       plugins: [ChartDataLabels],
       options: {
+        aspectRatio: 1,
         layout: { padding: { top: 24, right: 48 } },
         interaction: { mode: 'point', intersect: true },
         scales: {
-          x: { title: { display: true, text: this.wantLabelValue }, min: 1, max: 5, ticks: { stepSize: 1 } },
-          y: { title: { display: true, text: this.canLabelValue }, min: 1, max: 4, ticks: { stepSize: 1 } }
+          x: {
+            title: { display: true, text: this.wantLabelValue },
+            min: -2,
+            max: 2,
+            grid: { color: gridColor },
+            ticks: {
+              stepSize: 1,
+              callback: (value) => this.wantTicksValue[value + 2]
+            }
+          },
+          y: {
+            title: { display: true, text: this.canLabelValue },
+            min: -2,
+            max: 2,
+            grid: { color: gridColor },
+            afterBuildTicks: (axis) => {
+              // Add 0 so the centre line is drawn
+              axis.ticks = [...canTickValues, 0].sort((a, b) => a - b).map((value) => ({ value }))
+            },
+            ticks: {
+              callback: (value) => (value === 0 ? '' : this.canTicksValue[canTickValues.indexOf(value)])
+            }
+          }
         },
         plugins: {
           legend: { display: false },
