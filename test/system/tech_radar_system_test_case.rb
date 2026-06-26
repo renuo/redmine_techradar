@@ -4,8 +4,7 @@ require_relative '../test_helper'
 require_relative '../../../../test/application_system_test_case'
 
 # Base class for system tests that drive the rating flow with the standard
-# two-technology fixture (Ruby, Rails). System tests run outside the wrapping
-# transaction, so the created rows are cleaned up explicitly in teardown.
+# two-technology fixture (Ruby, Rails).
 class TechRadarSystemTestCase < ApplicationSystemTestCase
   fixtures :users
 
@@ -14,12 +13,6 @@ class TechRadarSystemTestCase < ApplicationSystemTestCase
     @user = User.find_by(login: 'admin')
     @t1 = TechRadar::Technology.create!(name: 'Ruby')
     @t2 = TechRadar::Technology.create!(name: 'Rails')
-  end
-
-  def teardown
-    TechRadar::Rating.delete_all
-    TechRadar::Technology.delete_all
-    super
   end
 
   private
