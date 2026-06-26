@@ -25,7 +25,7 @@ module TechRadar
       levels = submitted_levels
       return head :unprocessable_entity unless levels
 
-      TechRadar::Rating.record_for(User.current, technology, *levels)
+      TechRadar::Rating.rate!(User.current, technology, *levels)
       redirect_to tech_radar_ratings_path(page: params[:page])
     end
 
@@ -39,7 +39,7 @@ module TechRadar
       levels = submitted_levels
       return head :unprocessable_entity unless levels
 
-      TechRadar::Rating.record_for(User.current, @technology, *levels)
+      TechRadar::Rating.rate!(User.current, @technology, *levels)
 
       following = rating_queue.following(@technology)
       if following

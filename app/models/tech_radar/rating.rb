@@ -10,7 +10,7 @@ module TechRadar
 
     validates :user_id, uniqueness: { scope: :technology_id }
 
-    def self.record_for(user, technology, can_level, want_level)
+    def self.rate!(user, technology, can_level, want_level)
       rating = find_or_initialize_by(user: user, technology: technology)
       rating.update!(can_level: can_level, want_level: want_level)
       rating
