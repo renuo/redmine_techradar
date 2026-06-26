@@ -2,11 +2,6 @@
 
 <h2><%= t('tech_radar.nav.my_ratings') %></h2>
 
-<%
-  can_options = TechRadar::Rating.can_levels.keys.map { |k| [t("tech_radar.rate.can.#{k}"), k] }
-  want_options = TechRadar::Rating.want_levels.keys.map { |k| [t("tech_radar.rate.want.#{k}"), k] }
-%>
-
 <div class="tech-radar-ratings">
   <div class="tech-radar-rating-row tech-radar-rating-head">
     <span class="tech-radar-rating-name"><%= t('tech_radar.ratings.technology') %></span>
@@ -19,10 +14,10 @@
     <%= form_with url: save_tech_radar_rating_path(technology, page: params[:page]), method: :patch,
                   class: 'tech-radar-rating-row', data: { controller: 'rating-row' } do |f| %>
       <span class="tech-radar-rating-name"><%= technology.name %></span>
-      <%= f.select 'rating[can_level]', can_options,
+      <%= f.select 'rating[can_level]', can_level_options,
                    { include_blank: true, selected: rating&.can_level },
                    data: { rating_row_target: 'field', action: 'change->rating-row#submitIfReady' } %>
-      <%= f.select 'rating[want_level]', want_options,
+      <%= f.select 'rating[want_level]', want_level_options,
                    { include_blank: true, selected: rating&.want_level },
                    data: { rating_row_target: 'field', action: 'change->rating-row#submitIfReady' } %>
     <% end %>
