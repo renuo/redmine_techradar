@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TechRadarController < ApplicationController
+  helper TechRadar::RatingsHelper
+
   before_action :require_login
   before_action :authorize_global
 

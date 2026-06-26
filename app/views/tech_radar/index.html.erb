@@ -18,8 +18,8 @@
                onchange: 'this.form.requestSubmit()' %>
 <% end %>
 
-<% can_ticks = TechRadar::Rating.can_levels.keys.map { |key| t("tech_radar.rate.can.#{key}") } %>
-<% want_ticks = TechRadar::Rating.want_levels.keys.map { |key| t("tech_radar.rate.want.#{key}") } %>
+<% can_ticks = can_level_options.map(&:first) %>
+<% want_ticks = want_level_options.map(&:first) %>
 <div class="tech-radar-evaluation">
   <canvas data-controller="scatter-chart"
           data-scatter-chart-points-value="<%= @points.to_json %>"
