@@ -20,7 +20,7 @@ Redmine::Plugin.register :redmine_techradar do
       global: true,
       require: :loggedin
     permission :rate_technologies,
-      { 'tech_radar/ratings': [:index, :rate, :show, :update, :save] },
+      { 'tech_radar/ratings': [:index, :rate, :show, :update] },
       global: true,
       require: :loggedin
   end
