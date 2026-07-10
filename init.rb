@@ -10,18 +10,20 @@ Redmine::Plugin.register :redmine_techradar do
   name 'Redmine Techradar plugin'
   author 'Brendan Minder'
   description 'A Techradar plugin for Redmine'
-  version '0.0.1'
+  version '0.1.0'
   url 'https://github.com/renuo/redmine_techradar'
   author_url 'https://github.com/ddbrendan'
 
-  permission :view_tech_radar,
-             { tech_radar: [:index] },
-             global: true,
-             require: :loggedin
-  permission :rate_technologies,
-             { 'tech_radar/ratings': [:index, :rate, :show, :update, :save] },
-             global: true,
-             require: :loggedin
+  project_module :tech_radar do
+    permission :view_tech_radar,
+      { tech_radar: [:index] },
+      global: true,
+      require: :loggedin
+    permission :rate_technologies,
+      { 'tech_radar/ratings': [:index, :rate, :show, :update] },
+      global: true,
+      require: :loggedin
+  end
 
   menu :top_menu, :tech_radar,
        '/tech_radar',
