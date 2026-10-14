@@ -185,4 +185,12 @@ class TechRadarControllerTest < Redmine::ControllerTest
     assert_response :success
     assert_select '.tabs a[href=?]', tech_radar_technologies_path, count: 0
   end
+
+  def test_index_passes_background_image_to_chart
+    get :index
+
+    canvas = css_select('canvas[data-controller="scatter-chart"]').first
+
+    assert_match %r{/tech_radar_background(-\w+)?\.webp\z}, canvas['data-scatter-chart-background-image-value']
+  end
 end
