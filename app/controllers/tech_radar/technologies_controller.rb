@@ -45,7 +45,7 @@ module TechRadar
     private
 
     def technology_params
-      params.expect(tech_radar_technology: [:name])
+      params.require(:tech_radar_technology).permit(:name)
     end
 
     def set_technology
