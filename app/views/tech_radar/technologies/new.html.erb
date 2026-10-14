@@ -1,0 +1,8 @@
+<%= render 'tech_radar/nav' %>
+
+<%= title [t('tech_radar.nav.technologies'), tech_radar_technologies_path], t('tech_radar.technologies.new') %>
+
+<%= labelled_form_for @technology, url: tech_radar_technologies_path do |f| %>
+  <%= render 'form', f: f %>
+  <%= submit_tag l(:button_create) %>
+<% end %>

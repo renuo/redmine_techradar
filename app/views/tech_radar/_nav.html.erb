@@ -16,5 +16,11 @@
                     class: ('selected' if current_page?(tech_radar_ratings_path)) %>
       </li>
     <% end %>
+    <% if User.current.allowed_to?(:manage_technologies, nil, global: true) %>
+      <li>
+        <%= link_to t('tech_radar.nav.technologies'), tech_radar_technologies_path,
+                    class: ('selected' if controller_path == 'tech_radar/technologies') %>
+      </li>
+    <% end %>
   </ul>
 </div>

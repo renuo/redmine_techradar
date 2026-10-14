@@ -23,6 +23,10 @@ Redmine::Plugin.register :redmine_techradar do
       { 'tech_radar/ratings': [:index, :rate, :show, :update] },
       global: true,
       require: :loggedin
+    permission :manage_technologies,
+      { 'tech_radar/technologies': [:index, :new, :create, :edit, :update, :destroy] },
+      global: true,
+      require: :loggedin
   end
 
   menu :top_menu, :tech_radar,

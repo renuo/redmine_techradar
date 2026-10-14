@@ -1,0 +1,38 @@
+<%= render 'tech_radar/nav' %>
+
+<div class="contextual">
+  <%= link_to sprite_icon('add', t('tech_radar.technologies.new')), new_tech_radar_technology_path, class: 'icon icon-add' %>
+</div>
+
+<h2><%= t('tech_radar.nav.technologies') %></h2>
+
+<% if @technologies.any? %>
+  <table class="list tech-radar-technologies">
+    <thead>
+      <tr>
+        <th><%= l(:field_name) %></th>
+        <th><%= t('tech_radar.technologies.ratings') %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @technologies.each do |technology| %>
+        <% rating_count = @rating_counts.fetch(technology.id, 0) %>
+        <tr>
+          <td class="name"><%= link_to technology.name, edit_tech_radar_technology_path(technology) %></td>
+          <td class="ratings"><%= rating_count %></td>
+          <td class="buttons">
+            <%= delete_link tech_radar_technology_path(technology),
+                            data: { confirm: t('tech_radar.technologies.confirm_delete', count: rating_count) } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <span class="pagination"><%= pagination_links_full @technology_pages %></span>
+<% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
+
+<% html_title(t('tech_radar.nav.technologies')) -%>
