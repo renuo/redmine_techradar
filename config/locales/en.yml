@@ -1,14 +1,23 @@
 en:
   permission_view_tech_radar: "View Tech Radar"
   permission_rate_technologies: "Rate technologies"
+  permission_manage_technologies: "Manage technologies"
   label_tech_radar: "Tech Radar"
   tech_radar:
     nav:
       evaluation: "Evaluation"
       rate: "Rate"
       my_ratings: "My ratings"
+      technologies: "Technologies"
     ratings:
       technology: "Technology"
+    technologies:
+      new: "New technology"
+      ratings: "Ratings"
+      confirm_delete:
+        zero: "Delete this technology?"
+        one: "Delete this technology and its rating?"
+        other: "Delete this technology and its %{count} ratings?"
     evaluation:
       can_axis: "Can"
       want_axis: "Want"

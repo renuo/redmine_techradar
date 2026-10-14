@@ -9,4 +9,5 @@ namespace :tech_radar do
   resources :ratings, only: [:index, :show, :update], param: :technology_id do
     get :rate, on: :collection
   end
+  resources :technologies, only: [:index, :new, :create, :edit, :update, :destroy]
 end

@@ -5,7 +5,7 @@ require_relative '../test_helper'
 class TechRadarControllerTest < Redmine::ControllerTest
   tests TechRadarController
 
-  fixtures :users
+  fixtures :users, :roles
 
   def setup
     User.current = nil
@@ -165,5 +165,24 @@ class TechRadarControllerTest < Redmine::ControllerTest
     points = JSON.parse(canvas['data-scatter-chart-points-value']).sort_by { |p| p['name'] }
 
     assert_equal %w[admin jsmith], points.pluck('name')
+  end
+
+  def test_index_shows_technologies_tab_to_user_with_manage_permission
+    Role.non_member.add_permission!(:view_tech_radar, :manage_technologies)
+    @request.session[:user_id] = @jsmith.id
+
+    get :index
+
+    assert_select '.tabs a[href=?]', tech_radar_technologies_path
+  end
+
+  def test_index_hides_technologies_tab_from_user_without_manage_permission
+    Role.non_member.add_permission!(:view_tech_radar)
+    @request.session[:user_id] = @jsmith.id
+
+    get :index
+
+    assert_response :success
+    assert_select '.tabs a[href=?]', tech_radar_technologies_path, count: 0
   end
 end

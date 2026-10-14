@@ -53,7 +53,7 @@ The seed adds two roles:
 
 Assign one of these roles to each user under **Administration → Users → *(user)* → Projects → New**: pick any project and check the appropriate role. The permissions are global, so the project is just a vehicle for the role assignment. Sales users see only the evaluation chart; developers also see the rating view.
 
-The two permissions (`view_tech_radar` and `rate_technologies`) are global and can also be wired into your own custom roles under **Administration → Roles and permissions**.
+The seed roles don't include the third permission, `manage_technologies`, which lets users add, rename, and delete technologies. Redmine admins have it implicitly. All three permissions are global and can also be wired into your own custom roles under **Administration → Roles and permissions**.
 
 ### Test users
 
@@ -64,7 +64,7 @@ For local development the seed also creates a `tech-radar` project and one test 
 | `techradar_dev` | `Tech Radar Entwickler` | Rating view and evaluation chart |
 | `techradar_sales` | `Tech Radar Sales` | Evaluation chart only |
 
-The starter list of technologies lives in [`db/seeds.rb`](db/seeds.rb). Edit the array and re-run the seed task to add or remove entries — the seed is idempotent (`find_or_create_by!`), so existing technologies stay untouched.
+The starter list of technologies lives in [`db/seeds.rb`](db/seeds.rb). Edit the array and re-run the seed task to add or remove entries — the seed is idempotent (`find_or_create_by!`), so existing technologies stay untouched. Users with the *Manage technologies* permission can also manage technologies in the app under **Tech Radar → Technologies**.
 
 ## Usage
 
@@ -72,6 +72,7 @@ Open Redmine and click **Tech Radar** in the top menu.
 
 - **Rate:** Pick a "Can" level and a "Want" level for each technology. The rating saves on the second click and the next unrated technology shows up. Use **Skip** to come back to a technology later, or **Back** to revisit the previous one.
 - **Evaluation:** A scatter chart shows every rating. Without filters, each point is the average rating for one technology across everyone (the centroid). Filter by person to see one developer's ratings; filter by technology to see how every developer rated it.
+- **Technologies** (requires *Manage technologies*): Add, rename, and delete technologies. Deleting a technology also deletes all of its ratings.
 
 ## Development
 
