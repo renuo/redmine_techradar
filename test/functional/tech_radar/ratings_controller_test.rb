@@ -67,22 +67,26 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
                   tech_radar_rating_path(@t2, from: 'list'), count: 0
   end
 
-  def test_index_paginates_technologies
-    with_settings per_page_options: '1,25,50' do
-      get :index, params: { per_page: 1, page: 2 }
-    end
-
-    assert_response :success
-    assert_select '.tech-radar-rating-name', text: 'Rails'
-    assert_select '.tech-radar-rating-name', text: 'Ruby', count: 0
-  end
-
-  def test_index_renders_pagination_controls_for_multiple_pages
+  def test_index_lists_all_technologies_on_a_single_page
     with_settings per_page_options: '1,25,50' do
       get :index, params: { per_page: 1 }
     end
 
-    assert_select 'span.pagination a', text: '2'
+    assert_select '.tech-radar-rating-name', text: 'Ruby'
+    assert_select '.tech-radar-rating-name', text: 'Rails'
+    assert_select 'span.pagination', count: 0
+  end
+
+  def test_index_offers_blank_option_only_for_unrated_rows
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
+    get :index
+
+    assert_select "form[action=?] option[value='']",
+                  tech_radar_rating_path(@t1, from: 'list'), count: 0
+    assert_select "form[action=?] option[value='']",
+                  tech_radar_rating_path(@t2, from: 'list'), count: 2
   end
 
   def test_update_from_list_creates_rating_and_redirects_to_overview
@@ -96,11 +100,13 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     assert_equal 'yes', rating.want_level
   end
 
-  def test_update_from_list_preserves_the_current_page
-    patch :update, params: { technology_id: @t1.id, from: 'list', page: 2,
+  def test_xhr_update_persists_rating_without_redirect
+    patch :update, xhr: true,
+                   params: { technology_id: @t1.id, from: 'list',
                              rating: { can_level: 'advanced', want_level: 'yes' } }
 
-    assert_redirected_to tech_radar_ratings_path(page: 2)
+    assert_response :no_content
+    assert_equal 'advanced', TechRadar::Rating.find_by(user: @admin, technology: @t1).can_level
   end
 
   def test_update_returns_unprocessable_entity_for_malformed_rating
@@ -139,6 +145,16 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     assert_select ".tech-radar-card-can button.previous[data-level='advanced']"
     assert_select ".tech-radar-card-want button.previous[data-level='yes']"
     assert_select 'button.previous', count: 2
+  end
+
+  def test_show_prefills_saved_rating
+    TechRadar::Rating.create!(user: @admin, technology: @t1,
+                              can_level: :advanced, want_level: :yes)
+
+    get :show, params: { technology_id: @t1.id }
+
+    assert_select "input[name='rating[can_level]'][value='advanced']"
+    assert_select "input[name='rating[want_level]'][value='yes']"
   end
 
   def test_show_renders_no_previous_highlight_when_unrated

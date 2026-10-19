@@ -13,9 +13,7 @@ class RatingsOverviewTest < TechRadarSystemTestCase
       select 'Yes', from: 'rating[want_level]'
     end
 
-    assert_selector :xpath,
-                    "#{row_xpath('Ruby')}//select[@name='rating[can_level]']" \
-                    "/option[@value='advanced'][@selected]"
+    assert_selector :xpath, "#{row_xpath('Ruby')}[@data-state='saved']"
     assert_equal [{ can_level: 'advanced', want_level: 'yes' }], rating_values_for(@t1)
   end
 
@@ -30,9 +28,7 @@ class RatingsOverviewTest < TechRadarSystemTestCase
       select 'Professional', from: 'rating[can_level]'
     end
 
-    assert_selector :xpath,
-                    "#{row_xpath('Ruby')}//select[@name='rating[can_level]']" \
-                    "/option[@value='professional'][@selected]"
+    assert_selector :xpath, "#{row_xpath('Ruby')}[@data-state='saved']"
     assert_equal [{ can_level: 'professional', want_level: 'no' }], rating_values_for(@t1)
   end
 
@@ -45,11 +41,23 @@ class RatingsOverviewTest < TechRadarSystemTestCase
       select 'Advanced', from: 'rating[can_level]'
     end
 
-    # The row must not auto-submit until both axes are chosen: requestSubmit is
-    # called synchronously on change, so a broken guard would already have
-    # navigated away from the overview by now.
-    assert_current_path '/tech_radar/ratings'
+    assert_selector :xpath, "#{row_xpath('Ruby')}[@data-state='incomplete']"
     assert_empty rating_values_for(@t1)
+  end
+
+  def test_saving_keeps_scroll_position
+    40.times { |i| TechRadar::Technology.create!(name: "Tech #{i}") }
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/ratings'
+
+    within(:xpath, row_xpath('Tech 39')) do
+      select 'Advanced', from: 'rating[can_level]'
+      select 'Yes', from: 'rating[want_level]'
+    end
+
+    assert_selector :xpath, "#{row_xpath('Tech 39')}[@data-state='saved']"
+    assert_operator page.evaluate_script('window.scrollY'), :>, 0
   end
 
   private
