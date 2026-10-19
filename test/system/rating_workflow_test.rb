@@ -83,6 +83,43 @@ class RatingWorkflowTest < TechRadarSystemTestCase
     assert_equal [{ can_level: 'professional', want_level: 'yes' }], rating_values_for(@t1)
   end
 
+  def test_fixing_only_want_after_back_saves_with_one_click
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/ratings/rate'
+    click_button '2. Beginner'
+    click_button '1. No'
+
+    find('h2', text: 'Rails')
+    click_link 'Back'
+    find('h2', text: 'Ruby')
+    click_button '5. Yes'
+    find('h2', text: 'Rails')
+
+    assert_equal [{ can_level: 'beginner', want_level: 'yes' }], rating_values_for(@t1)
+  end
+
+  def test_changing_can_after_back_waits_for_want
+    log_user('admin', 'admin')
+
+    visit '/tech_radar/ratings/rate'
+    click_button '2. Beginner'
+    click_button '1. No'
+
+    find('h2', text: 'Rails')
+    click_link 'Back'
+    find('h2', text: 'Ruby')
+    click_button '4. Professional'
+
+    assert_selector 'h2', text: 'Ruby'
+    assert_equal [{ can_level: 'beginner', want_level: 'no' }], rating_values_for(@t1)
+
+    click_button '1. No'
+    find('h2', text: 'Rails')
+
+    assert_equal [{ can_level: 'professional', want_level: 'no' }], rating_values_for(@t1)
+  end
+
   def test_back_through_every_rated_card_shows_its_rating
     @t3 = TechRadar::Technology.create!(name: 'Vue')
     @t4 = TechRadar::Technology.create!(name: 'Go')

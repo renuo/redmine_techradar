@@ -7,7 +7,7 @@ module TechRadar
     before_action :set_technology, only: [:show, :update]
 
     def index
-      @technology_pages, @technologies = paginate(TechRadar::Technology.order(:id))
+      @technologies = TechRadar::Technology.order(:id)
       @ratings = TechRadar::Rating.where(user: User.current).index_by(&:technology_id)
     end
 
@@ -27,16 +27,19 @@ module TechRadar
       return head :unprocessable_entity unless levels
 
       TechRadar::Rating.rate!(User.current, @technology, *levels)
+      return head :no_content if request.xhr?
+
       redirect_to after_update_path
     end
 
     private
 
     # The overview table and the card flow share this single update action; they
-    # only differ in where to go afterwards. The table sends `from=list` to
-    # return to the same page, the card flow advances to the next technology.
+    # only differ in where to go afterwards. The table saves in the background
+    # and only falls back to `from=list` without JavaScript, the card flow
+    # advances to the next technology.
     def after_update_path
-      return tech_radar_ratings_path(page: params[:page]) if params[:from] == 'list'
+      return tech_radar_ratings_path if params[:from] == 'list'
 
       following = rating_queue.following(@technology)
       following ? tech_radar_rating_path(following) : rate_tech_radar_ratings_path

@@ -2,21 +2,23 @@
 
 <h2><%= t('label_tech_radar') %></h2>
 
-<%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
-  <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
-  <%= f.select :user_id,
-               @users.pluck(:login, :id),
-               { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
-               onchange: 'this.form.requestSubmit()' %>
-<% end %>
+<div class="tech-radar-filters">
+  <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
+    <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
+    <%= f.select :user_id,
+                 @users.pluck(:login, :id),
+                 { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
+                 onchange: 'this.form.requestSubmit()' %>
+  <% end %>
 
-<%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
-  <%= f.label :technology_id, t('tech_radar.evaluation.filter.technology_label') %>
-  <%= f.select :technology_id,
-               @technologies.pluck(:name, :id),
-               { include_blank: t('tech_radar.evaluation.filter.all_technologies'), selected: @technology_id },
-               onchange: 'this.form.requestSubmit()' %>
-<% end %>
+  <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
+    <%= f.label :technology_id, t('tech_radar.evaluation.filter.technology_label') %>
+    <%= f.select :technology_id,
+                 @technologies.pluck(:name, :id),
+                 { include_blank: t('tech_radar.evaluation.filter.all_technologies'), selected: @technology_id },
+                 onchange: 'this.form.requestSubmit()' %>
+  <% end %>
+</div>
 
 <% can_ticks = can_level_options.map(&:first) %>
 <% want_ticks = want_level_options.map(&:first) %>

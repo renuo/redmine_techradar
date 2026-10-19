@@ -1,18 +1,23 @@
 <%= render 'tech_radar/nav' %>
 
-<div class="tech-radar-card" data-controller="rating-card">
+<div class="tech-radar-card"
+     data-controller="rating-card"
+     data-rating-card-can-level-value="<%= @rating&.can_level %>"
+     data-rating-card-want-level-value="<%= @rating&.want_level %>">
   <h2><%= @technology.name %></h2>
 
   <%= form_with url: tech_radar_rating_path(@technology), method: :patch,
                 data: { rating_card_target: 'form' } do |f| %>
     <%= f.hidden_field 'rating[can_level]',
-                       value: '',
+                       value: @rating&.can_level,
+                       autocomplete: 'off',
                        data: { rating_card_target: 'canField' } %>
     <%= f.hidden_field 'rating[want_level]',
-                       value: '',
+                       value: @rating&.want_level,
+                       autocomplete: 'off',
                        data: { rating_card_target: 'wantField' } %>
 
-    <fieldset class="tech-radar-card-can">
+    <fieldset class="tech-radar-card-can" data-rating-card-target="canStep">
       <legend><%= t('tech_radar.rate.can_label') %></legend>
       <% TechRadar::Rating.can_levels.each_key.with_index(1) do |key, i| %>
         <button type="button"
@@ -25,7 +30,7 @@
       <% end %>
     </fieldset>
 
-    <fieldset class="tech-radar-card-want">
+    <fieldset class="tech-radar-card-want" data-rating-card-target="wantStep">
       <legend><%= t('tech_radar.rate.want_label') %></legend>
       <% TechRadar::Rating.want_levels.each_key.with_index(1) do |key, i| %>
         <button type="button"
