@@ -147,6 +147,14 @@ class TechRadar::RatingsControllerTest < Redmine::ControllerTest
     assert_select 'button.previous', count: 2
   end
 
+  def test_show_describes_each_can_level_on_its_button
+    get :show, params: { technology_id: @t1.id }
+
+    assert_select ".tech-radar-card-can button[data-level='professional'] .tech-radar-level-description",
+                  text: 'I know it so well that I can teach others'
+    assert_select '.tech-radar-card-can .tech-radar-level-description', 4
+  end
+
   def test_show_prefills_saved_rating
     TechRadar::Rating.create!(user: @admin, technology: @t1,
                               can_level: :advanced, want_level: :yes)

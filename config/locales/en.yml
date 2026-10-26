@@ -48,6 +48,11 @@ en:
         beginner: "Beginner"
         advanced: "Advanced"
         professional: "Professional"
+      can_description:
+        unknown: "I never heard of that technology"
+        beginner: "I started learning it and can do simple things"
+        advanced: "I can work with it"
+        professional: "I know it so well that I can teach others"
       want:
         "no": "No"
         probably_no: "Rather no"
