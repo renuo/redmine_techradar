@@ -19,9 +19,9 @@ export default class extends Controller {
         backgroundColor: '#000000',
         // White outlines keep points and labels readable on top of the background drawing
         borderColor: '#ffffff',
-        borderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8,
+        borderWidth: 1.5,
+        pointRadius: 4.5,
+        pointHoverRadius: 6,
         clip: false
       }]
     }
@@ -40,7 +40,10 @@ export default class extends Controller {
       data,
       plugins: [ChartDataLabels, quadrantBackground(background)],
       options: {
-        aspectRatio: 1,
+        // The container sets the size (a square, see tech_radar.css). Letting the
+        // chart keep its own aspect ratio ties the container's height to the canvas,
+        // and Chart.js then never grows the chart back after the window shrank.
+        maintainAspectRatio: false,
         layout: { padding: { top: 24, right: 48 } },
         interaction: { mode: 'point', intersect: true },
         scales: {
@@ -80,12 +83,12 @@ export default class extends Controller {
           },
           datalabels: {
             align: 'top',
-            offset: 4,
+            offset: 2,
             clip: false,
             color: '#000000',
-            font: { weight: 'bold' },
+            font: { size: 10, weight: 'bold' },
             textStrokeColor: '#ffffff',
-            textStrokeWidth: 3,
+            textStrokeWidth: 2.5,
             formatter: (_, ctx) => ctx.dataset.data[ctx.dataIndex].label
           }
         }

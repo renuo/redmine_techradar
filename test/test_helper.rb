@@ -13,3 +13,13 @@ SimpleCov.start do
 end
 
 require File.expand_path('../../../test/test_helper', __dir__)
+
+module TechRadarTestHelpers
+  # Makes the principal (user or group) a rater through a membership in its own
+  # project, so it never collides with memberships from Redmine's fixtures
+  def grant_rating_role(principal)
+    role = Role.create!(name: "Rater #{principal.id}", permissions: [:rate_technologies])
+    project = Project.find_or_create_by!(name: 'Tech Radar raters', identifier: 'tech-radar-raters')
+    Member.create!(principal: principal, project: project, role_ids: [role.id])
+  end
+end

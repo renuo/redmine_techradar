@@ -3,6 +3,8 @@
 require_relative '../test_helper'
 
 class TechRadarControllerTest < Redmine::ControllerTest
+  include TechRadarTestHelpers
+
   tests TechRadarController
 
   fixtures :users, :roles
@@ -116,8 +118,8 @@ class TechRadarControllerTest < Redmine::ControllerTest
     points = JSON.parse(canvas['data-scatter-chart-points-value']).sort_by { |p| p['name'] }
 
     assert_equal [
-      { 'name' => 'admin',  'can' => 0.5, 'want' => 2.0 },
-      { 'name' => 'jsmith', 'can' => 1.5, 'want' => 1.0 }
+      { 'name' => 'John Smith',    'can' => 1.5, 'want' => 1.0 },
+      { 'name' => 'Redmine Admin', 'can' => 0.5, 'want' => 2.0 }
     ], points
   end
 
@@ -164,7 +166,7 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
     points = JSON.parse(canvas['data-scatter-chart-points-value']).sort_by { |p| p['name'] }
 
-    assert_equal %w[admin jsmith], points.pluck('name')
+    assert_equal ['John Smith', 'Redmine Admin'], points.pluck('name')
   end
 
   def test_index_shows_technologies_tab_to_user_with_manage_permission
@@ -192,5 +194,80 @@ class TechRadarControllerTest < Redmine::ControllerTest
     canvas = css_select('canvas[data-controller="scatter-chart"]').first
 
     assert_match %r{/tech_radar_background(-\w+)?\.webp\z}, canvas['data-scatter-chart-background-image-value']
+  end
+
+  def test_index_renders_ratings_as_plain_table_rows
+    rating = TechRadar::Rating.create!(user: @admin, technology: @ruby,
+                                       can_level: :advanced, want_level: :probably_yes)
+    rating.update_column(:updated_at, Time.zone.local(2026, 3, 4, 12))
+
+    get :index
+
+    headers = css_select('.tech-radar-ratings-table th').map { |th| th.text.strip }
+    cells = css_select('.tech-radar-ratings-table tbody tr td').map { |td| td.text.strip }
+
+    assert_equal ['Person', 'Technology', 'Can', 'Want', 'Last edited'], headers
+    assert_equal ['Redmine Admin', 'Ruby', 'Advanced', 'Rather yes', '03/04/2026'], cells
+  end
+
+  def test_index_with_user_id_narrows_table_to_their_ratings
+    TechRadar::Rating.create!(user: @admin,  technology: @ruby,  can_level: :advanced, want_level: :yes)
+    TechRadar::Rating.create!(user: @jsmith, technology: @rails, can_level: :beginner, want_level: :no)
+
+    get :index, params: { user_id: @jsmith.id }
+
+    assert_select '.tech-radar-ratings-table tbody tr', 1
+    assert_select '.tech-radar-ratings-table td', text: 'Rails'
+  end
+
+  def test_index_with_technology_id_lists_raters_who_have_not_rated_it
+    grant_rating_role(@jsmith)
+    TechRadar::Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
+
+    get :index, params: { technology_id: @ruby.id }
+
+    assert_select '.tech-radar-ratings-table tr.unrated', 1 do
+      assert_select 'td', text: 'John Smith'
+      assert_select 'td', text: 'Not rated'
+    end
+  end
+
+  def test_index_summarises_ratings_and_missing_raters
+    grant_rating_role(@jsmith)
+    TechRadar::Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
+
+    get :index, params: { technology_id: @ruby.id }
+
+    assert_select '.tech-radar-ratings-summary', text: '1 rating, 1 not rated'
+  end
+
+  def test_index_summary_omits_missing_raters_when_everyone_rated
+    TechRadar::Rating.create!(user: @admin, technology: @ruby,  can_level: :advanced, want_level: :yes)
+    TechRadar::Rating.create!(user: @admin, technology: @rails, can_level: :beginner, want_level: :no)
+
+    get :index
+
+    assert_select '.tech-radar-ratings-summary', text: '2 ratings'
+  end
+
+  def test_index_offers_clear_link_when_filtered
+    TechRadar::Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
+
+    get :index, params: { technology_id: @ruby.id }
+
+    assert_select '.tech-radar-filters a[href=?]', tech_radar_path, text: 'Clear'
+  end
+
+  def test_index_offers_no_clear_link_when_unfiltered
+    get :index
+
+    assert_select '.tech-radar-filters a[href=?]', tech_radar_path, count: 0
+  end
+
+  def test_index_shows_no_data_when_nothing_to_list
+    get :index
+
+    assert_select '.tech-radar-ratings-table table', 0
+    assert_select '.tech-radar-ratings-table .nodata'
   end
 end

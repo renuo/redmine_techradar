@@ -23,6 +23,7 @@ class TechRadarController < ApplicationController
               else
                 TechRadar::Rating.centroids_by_technology
               end
+    @table_rows = TechRadar::RatingTable.new(user_id: @user_id, technology_id: @technology_id).rows
   end
 
   private

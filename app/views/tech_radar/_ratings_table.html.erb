@@ -1,0 +1,38 @@
+<%# Plain server-rendered rows so the browser's find (Ctrl+F) searches every rating %>
+<div class="tech-radar-ratings-table">
+  <h3><%= t('tech_radar.evaluation.table.heading') %></h3>
+
+  <% if rows.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <p class="tech-radar-ratings-summary"><%= ratings_summary(rows) %></p>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= t('tech_radar.evaluation.table.person') %></th>
+          <th><%= t('tech_radar.evaluation.table.technology') %></th>
+          <th><%= t('tech_radar.evaluation.table.can') %></th>
+          <th><%= t('tech_radar.evaluation.table.want') %></th>
+          <th><%= t('tech_radar.evaluation.table.updated_on') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr class="<%= cycle('odd', 'even') %> <%= 'unrated' unless row.rating %>">
+            <td><%= row.user.name %></td>
+            <td><%= row.technology&.name %></td>
+            <% if row.rating %>
+              <td><%= t("tech_radar.rate.can.#{row.rating.can_level}") %></td>
+              <td><%= t("tech_radar.rate.want.#{row.rating.want_level}") %></td>
+              <td><%= last_edited_on(row.rating) %></td>
+            <% else %>
+              <td><%= t('tech_radar.evaluation.table.not_rated') %></td>
+              <td></td>
+              <td></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

@@ -4,6 +4,8 @@ require_relative '../../test_helper'
 
 module TechRadar
   class RatingTest < ActiveSupport::TestCase
+    include TechRadarTestHelpers
+
     fixtures :users
 
     def setup
@@ -73,15 +75,15 @@ module TechRadar
       assert_empty Rating.points_for_technology(@ruby.id)
     end
 
-    def test_points_for_technology_returns_one_point_per_rater_labelled_by_login
+    def test_points_for_technology_returns_one_point_per_rater_labelled_by_name
       Rating.create!(user: @admin,  technology: @ruby, can_level: :advanced,     want_level: :yes)
       Rating.create!(user: @jsmith, technology: @ruby, can_level: :professional, want_level: :probably_yes)
 
       points = Rating.points_for_technology(@ruby.id).sort_by { |p| p[:name] }
 
       assert_equal [
-        { name: 'admin',  can: 0.5, want: 2.0 },
-        { name: 'jsmith', can: 1.5, want: 1.0 }
+        { name: 'John Smith',    can: 1.5, want: 1.0 },
+        { name: 'Redmine Admin', can: 0.5, want: 2.0 }
       ], points
     end
 
@@ -89,7 +91,7 @@ module TechRadar
       Rating.create!(user: @admin, technology: @ruby,  can_level: :advanced, want_level: :yes)
       Rating.create!(user: @admin, technology: @rails, can_level: :beginner, want_level: :neutral)
 
-      assert_equal [{ name: 'admin', can: 0.5, want: 2.0 }], Rating.points_for_technology(@ruby.id)
+      assert_equal [{ name: 'Redmine Admin', can: 0.5, want: 2.0 }], Rating.points_for_technology(@ruby.id)
     end
 
     def test_users_with_ratings_returns_empty_without_ratings
@@ -101,14 +103,47 @@ module TechRadar
       Rating.create!(user: @admin,  technology: @rails, can_level: :beginner, want_level: :neutral)
       Rating.create!(user: @jsmith, technology: @ruby,  can_level: :beginner, want_level: :neutral)
 
-      assert_equal %w[admin jsmith], Rating.users_with_ratings.map(&:login)
+      assert_equal %w[admin jsmith], Rating.users_with_ratings.map(&:login).sort
     end
 
-    def test_users_with_ratings_orders_by_login
-      Rating.create!(user: @jsmith, technology: @ruby, can_level: :beginner, want_level: :neutral)
+    def test_users_with_ratings_orders_by_name
       Rating.create!(user: @admin,  technology: @ruby, can_level: :advanced, want_level: :yes)
+      Rating.create!(user: @jsmith, technology: @ruby, can_level: :beginner, want_level: :neutral)
 
-      assert_equal %w[admin jsmith], Rating.users_with_ratings.map(&:login)
+      assert_equal ['John Smith', 'Redmine Admin'], Rating.users_with_ratings.map(&:name)
+    end
+
+    def test_raters_are_members_with_a_rating_role
+      grant_rating_role(@jsmith)
+
+      assert_equal [@jsmith], Rating.raters.to_a
+    end
+
+    def test_raters_include_members_of_a_group_with_a_rating_role
+      group = Group.create!(lastname: 'Developers')
+      group.users << @jsmith
+      grant_rating_role(group)
+
+      assert_equal [@jsmith], Rating.raters.to_a
+    end
+
+    def test_raters_exclude_admins_without_a_rating_role
+      assert_not_includes Rating.raters, @admin
+    end
+
+    def test_raters_exclude_locked_users
+      grant_rating_role(@jsmith)
+      @jsmith.lock!
+
+      assert_empty Rating.raters
+    end
+
+    def test_raters_are_all_active_users_when_non_members_may_rate
+      Role.non_member.add_permission!(:rate_technologies)
+
+      assert_includes Rating.raters, @jsmith
+      assert_includes Rating.raters, @admin
+      assert_not_includes Rating.raters, User.find_by(login: 'dlopper2')
     end
 
     def test_technologies_with_ratings_returns_empty_without_ratings

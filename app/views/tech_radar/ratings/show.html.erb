@@ -25,7 +25,8 @@
                 data-action="click->rating-card#selectCan"
                 data-rating-card-target="canButton"
                 data-level="<%= key %>">
-          <%= "#{i}. #{t("tech_radar.rate.can.#{key}")}" %>
+          <span class="tech-radar-level-name"><%= "#{i}. #{t("tech_radar.rate.can.#{key}")}" %></span>
+          <span class="tech-radar-level-description"><%= t("tech_radar.rate.can_description.#{key}") %></span>
         </button>
       <% end %>
     </fieldset>
