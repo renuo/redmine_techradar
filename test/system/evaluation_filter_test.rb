@@ -38,7 +38,7 @@ class EvaluationFilterTest < ApplicationSystemTestCase
     log_user('admin', 'admin')
     visit '/tech_radar'
 
-    select 'jsmith', from: 'user_id'
+    select 'John Smith', from: 'user_id'
 
     assert_chart_labels %w[Ruby]
   end
@@ -47,7 +47,7 @@ class EvaluationFilterTest < ApplicationSystemTestCase
     log_user('admin', 'admin')
     visit '/tech_radar'
 
-    select 'admin', from: 'user_id'
+    select 'Redmine Admin', from: 'user_id'
 
     assert_current_path(/user_id=#{@admin.id}/)
   end
@@ -58,7 +58,7 @@ class EvaluationFilterTest < ApplicationSystemTestCase
 
     select 'Ruby', from: 'technology_id'
 
-    assert_chart_labels %w[admin jsmith]
+    assert_chart_labels ['John Smith', 'Redmine Admin']
   end
 
   def test_technology_filter_selection_appears_in_url
@@ -68,6 +68,19 @@ class EvaluationFilterTest < ApplicationSystemTestCase
     select 'Ruby', from: 'technology_id'
 
     assert_current_path(/technology_id=#{@ruby.id}/)
+  end
+
+  def test_filtering_by_technology_narrows_ratings_table
+    log_user('admin', 'admin')
+    visit '/tech_radar'
+
+    select 'Rails', from: 'technology_id'
+
+    within('.tech-radar-ratings-table table') do
+      assert_text 'Redmine Admin'
+      assert_no_text 'Ruby'
+      assert_no_text 'John Smith'
+    end
   end
 
   private

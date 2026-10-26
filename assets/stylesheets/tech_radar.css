@@ -11,9 +11,62 @@
   gap: 0.5em;
 }
 
+/* Chart and table stack on narrow screens. On wide ones they sit side by side,
+   and the chart stays in view while a long table scrolls past. */
+.tech-radar-evaluation-page {
+  display: grid;
+  gap: 2em;
+  align-items: start;
+}
+
 .tech-radar-evaluation {
-  max-width: 75vh;
+  position: relative;
+  width: min(100%, 70vh);
+  aspect-ratio: 1;
   margin-inline: auto;
+}
+
+/* Out of the flow, so a stale canvas size never props the square open */
+.tech-radar-evaluation canvas {
+  position: absolute;
+  inset: 0;
+}
+
+@media (min-width: 1200px) {
+  .tech-radar-evaluation-page {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .tech-radar-evaluation {
+    position: sticky;
+    top: 1em;
+  }
+}
+
+/* Redmine's wrappers hide or scroll their overflow, which keeps the chart from
+   sticking. clip cuts off overflow the same way without that side effect. */
+body.controller-tech_radar.action-index #wrapper,
+body.controller-tech_radar.action-index #content {
+  overflow: clip;
+}
+
+.tech-radar-ratings-table h3 {
+  margin: 0;
+}
+
+.tech-radar-ratings-summary {
+  margin: 0.25em 0 0.75em;
+  color: #666;
+}
+
+.tech-radar-ratings-table table.list th,
+.tech-radar-ratings-table table.list td {
+  text-align: left;
+}
+
+.tech-radar-ratings-table tr.unrated td {
+  color: #888;
+  font-style: italic;
 }
 
 .tech-radar-card,

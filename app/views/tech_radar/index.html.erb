@@ -6,7 +6,7 @@
   <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
     <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
     <%= f.select :user_id,
-                 @users.pluck(:login, :id),
+                 @users.map { |user| [user.name, user.id] },
                  { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
                  onchange: 'this.form.requestSubmit()' %>
   <% end %>
@@ -18,16 +18,24 @@
                  { include_blank: t('tech_radar.evaluation.filter.all_technologies'), selected: @technology_id },
                  onchange: 'this.form.requestSubmit()' %>
   <% end %>
+
+  <% if @user_id || @technology_id %>
+    <%= link_to l(:button_clear), tech_radar_path, class: 'icon icon-reload' %>
+  <% end %>
 </div>
 
 <% can_ticks = can_level_options.map(&:first) %>
 <% want_ticks = want_level_options.map(&:first) %>
-<div class="tech-radar-evaluation">
-  <canvas data-controller="scatter-chart"
-          data-scatter-chart-points-value="<%= @points.to_json %>"
-          data-scatter-chart-can-label-value="<%= t('tech_radar.evaluation.can_axis') %>"
-          data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"
-          data-scatter-chart-can-ticks-value="<%= can_ticks.to_json %>"
-          data-scatter-chart-want-ticks-value="<%= want_ticks.to_json %>"
-          data-scatter-chart-background-image-value="<%= asset_path('plugin_assets/redmine_techradar/tech_radar_background.webp') %>"></canvas>
+<div class="tech-radar-evaluation-page">
+  <div class="tech-radar-evaluation">
+    <canvas data-controller="scatter-chart"
+            data-scatter-chart-points-value="<%= @points.to_json %>"
+            data-scatter-chart-can-label-value="<%= t('tech_radar.evaluation.can_axis') %>"
+            data-scatter-chart-want-label-value="<%= t('tech_radar.evaluation.want_axis') %>"
+            data-scatter-chart-can-ticks-value="<%= can_ticks.to_json %>"
+            data-scatter-chart-want-ticks-value="<%= want_ticks.to_json %>"
+            data-scatter-chart-background-image-value="<%= asset_path('plugin_assets/redmine_techradar/tech_radar_background.webp') %>"></canvas>
+  </div>
+
+  <%= render 'tech_radar/ratings_table', rows: @table_rows %>
 </div>

@@ -26,6 +26,20 @@ en:
         all_users: "All people"
         technology_label: "Technology"
         all_technologies: "All technologies"
+      table:
+        heading: "Ratings"
+        person: "Person"
+        technology: "Technology"
+        can: "Can"
+        want: "Want"
+        updated_on: "Last edited"
+        not_rated: "Not rated"
+        rating_count:
+          one: "1 rating"
+          other: "%{count} ratings"
+        unrated_count:
+          one: "1 not rated"
+          other: "%{count} not rated"
     rate:
       can_label: "How well do you know it?"
       want_label: "Do you want to work with it?"
