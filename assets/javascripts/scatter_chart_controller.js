@@ -26,8 +26,8 @@ export default class extends Controller {
       }]
     }
 
-    // The four can levels; 0 carries no label — it only reserves the empty slot between them.
-    const canTickValues = [-2, -1, 1, 2]
+    // The four can levels sit one step apart, centred on 0; 0 itself carries no label.
+    const canTickValues = [-1.5, -0.5, 0.5, 1.5]
     // The background drawing has its own hand-drawn axes, so the centre grid line stays hidden.
     const gridColor = (ctx) => (ctx.tick?.value === 0 ? 'transparent' : 'rgba(0, 0, 0, 0.1)')
 
