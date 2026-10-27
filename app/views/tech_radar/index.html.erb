@@ -4,18 +4,18 @@
 
 <div class="tech-radar-filters">
   <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
-    <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
-    <%= f.select :user_id,
-                 @users.map { |user| [user.name, user.id] },
-                 { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
-                 onchange: 'this.form.requestSubmit()' %>
-  <% end %>
-
-  <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
     <%= f.label :technology_id, t('tech_radar.evaluation.filter.technology_label') %>
     <%= f.select :technology_id,
                  @technologies.pluck(:name, :id),
                  { include_blank: t('tech_radar.evaluation.filter.all_technologies'), selected: @technology_id },
+                 onchange: 'this.form.requestSubmit()' %>
+  <% end %>
+
+  <%= form_with url: tech_radar_path, method: :get, local: true do |f| %>
+    <%= f.label :user_id, t('tech_radar.evaluation.filter.user_label') %>
+    <%= f.select :user_id,
+                 @users.map { |user| [user.name, user.id] },
+                 { include_blank: t('tech_radar.evaluation.filter.all_users'), selected: @user_id },
                  onchange: 'this.form.requestSubmit()' %>
   <% end %>
 
@@ -37,5 +37,5 @@
             data-scatter-chart-background-image-value="<%= asset_path('plugin_assets/redmine_techradar/tech_radar_background.webp') %>"></canvas>
   </div>
 
-  <%= render 'tech_radar/ratings_table', rows: @table_rows %>
+  <%= render 'tech_radar/ratings_table', table: @table, ratings: @table_ratings, pages: @table_pages %>
 </div>

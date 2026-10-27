@@ -23,7 +23,10 @@ class TechRadarController < ApplicationController
               else
                 TechRadar::Rating.centroids_by_technology
               end
-    @table_rows = TechRadar::RatingTable.new(user_id: @user_id, technology_id: @technology_id).rows
+
+    @table = TechRadar::RatingTable.new(user_id: @user_id, technology_id: @technology_id)
+    @table_pages = Paginator.new(@table.count, per_page_option, params['page'])
+    @table_ratings = @table.ratings(offset: @table_pages.offset, limit: @table_pages.per_page)
   end
 
   private

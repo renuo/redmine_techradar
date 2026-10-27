@@ -63,17 +63,6 @@ module TechRadar
       User.where(id: select(:user_id).distinct).sorted
     end
 
-    # Active users with a role that allows rating; they are expected to rate.
-    # Unlike permission checks, admins only count through such a role.
-    def self.raters
-      users = User.active
-      return users if Role.non_member.allowed_to?(:rate_technologies)
-
-      role_ids = Role.givable.select { |role| role.allowed_to?(:rate_technologies) }.map(&:id)
-      # Group roles are copied onto their users' memberships, so this covers groups too
-      users.where(id: Member.joins(:member_roles).where(member_roles: { role_id: role_ids }).select(:user_id))
-    end
-
     def self.technologies_with_ratings
       TechRadar::Technology.where(id: select(:technology_id).distinct).order(:name)
     end
