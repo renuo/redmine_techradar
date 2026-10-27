@@ -3,8 +3,6 @@
 require_relative '../test_helper'
 
 class TechRadarControllerTest < Redmine::ControllerTest
-  include TechRadarTestHelpers
-
   tests TechRadarController
 
   fixtures :users, :roles
@@ -220,34 +218,34 @@ class TechRadarControllerTest < Redmine::ControllerTest
     assert_select '.tech-radar-ratings-table td', text: 'Rails'
   end
 
-  def test_index_with_technology_id_lists_raters_who_have_not_rated_it
-    grant_rating_role(@jsmith)
-    TechRadar::Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
-
-    get :index, params: { technology_id: @ruby.id }
-
-    assert_select '.tech-radar-ratings-table tr.unrated', 1 do
-      assert_select 'td', text: 'John Smith'
-      assert_select 'td', text: 'Not rated'
-    end
-  end
-
-  def test_index_summarises_ratings_and_missing_raters
-    grant_rating_role(@jsmith)
-    TechRadar::Rating.create!(user: @admin, technology: @ruby, can_level: :advanced, want_level: :yes)
-
-    get :index, params: { technology_id: @ruby.id }
-
-    assert_select '.tech-radar-ratings-summary', text: '1 rating, 1 not rated'
-  end
-
-  def test_index_summary_omits_missing_raters_when_everyone_rated
+  def test_index_summarises_rating_count
     TechRadar::Rating.create!(user: @admin, technology: @ruby,  can_level: :advanced, want_level: :yes)
     TechRadar::Rating.create!(user: @admin, technology: @rails, can_level: :beginner, want_level: :no)
 
     get :index
 
     assert_select '.tech-radar-ratings-summary', text: '2 ratings'
+  end
+
+  def test_index_pages_the_table_and_keeps_the_filter
+    TechRadar::Rating.create!(user: @admin,  technology: @ruby, can_level: :advanced, want_level: :yes)
+    TechRadar::Rating.create!(user: @jsmith, technology: @ruby, can_level: :beginner, want_level: :no)
+
+    with_settings per_page_options: '1,25' do
+      get :index, params: { technology_id: @ruby.id, per_page: 1, page: 2 }
+    end
+
+    assert_select '.tech-radar-ratings-table tbody tr', 1 do
+      assert_select 'td', text: 'John Smith'
+    end
+    assert_select '.tech-radar-ratings-table .pagination a[href=?]',
+                  tech_radar_path(technology_id: @ruby.id, per_page: 1, page: 1), text: '1'
+  end
+
+  def test_index_offers_technology_filter_before_person_filter
+    get :index
+
+    assert_equal %w[technology_id user_id], css_select('.tech-radar-filters select').pluck('name')
   end
 
   def test_index_offers_clear_link_when_filtered

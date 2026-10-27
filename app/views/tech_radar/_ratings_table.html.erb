@@ -1,11 +1,11 @@
-<%# Plain server-rendered rows so the browser's find (Ctrl+F) searches every rating %>
+<%# Paged like Redmine's own lists; the pagination links keep the chart's filters %>
 <div class="tech-radar-ratings-table">
   <h3><%= t('tech_radar.evaluation.table.heading') %></h3>
 
-  <% if rows.empty? %>
+  <% if table.count.zero? %>
     <p class="nodata"><%= l(:label_no_data) %></p>
   <% else %>
-    <p class="tech-radar-ratings-summary"><%= ratings_summary(rows) %></p>
+    <p class="tech-radar-ratings-summary"><%= t('tech_radar.evaluation.table.rating_count', count: table.count) %></p>
     <table class="list">
       <thead>
         <tr>
@@ -17,22 +17,17 @@
         </tr>
       </thead>
       <tbody>
-        <% rows.each do |row| %>
-          <tr class="<%= cycle('odd', 'even') %> <%= 'unrated' unless row.rating %>">
-            <td><%= row.user.name %></td>
-            <td><%= row.technology&.name %></td>
-            <% if row.rating %>
-              <td><%= t("tech_radar.rate.can.#{row.rating.can_level}") %></td>
-              <td><%= t("tech_radar.rate.want.#{row.rating.want_level}") %></td>
-              <td><%= last_edited_on(row.rating) %></td>
-            <% else %>
-              <td><%= t('tech_radar.evaluation.table.not_rated') %></td>
-              <td></td>
-              <td></td>
-            <% end %>
+        <% ratings.each do |rating| %>
+          <tr class="<%= cycle('odd', 'even') %>">
+            <td><%= rating.user.name %></td>
+            <td><%= rating.technology.name %></td>
+            <td><%= t("tech_radar.rate.can.#{rating.can_level}") %></td>
+            <td><%= t("tech_radar.rate.want.#{rating.want_level}") %></td>
+            <td><%= last_edited_on(rating) %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
+    <span class="pagination"><%= pagination_links_full pages, table.count %></span>
   <% end %>
 </div>

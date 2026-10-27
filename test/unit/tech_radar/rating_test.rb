@@ -4,8 +4,6 @@ require_relative '../../test_helper'
 
 module TechRadar
   class RatingTest < ActiveSupport::TestCase
-    include TechRadarTestHelpers
-
     fixtures :users
 
     def setup
@@ -111,39 +109,6 @@ module TechRadar
       Rating.create!(user: @jsmith, technology: @ruby, can_level: :beginner, want_level: :neutral)
 
       assert_equal ['John Smith', 'Redmine Admin'], Rating.users_with_ratings.map(&:name)
-    end
-
-    def test_raters_are_members_with_a_rating_role
-      grant_rating_role(@jsmith)
-
-      assert_equal [@jsmith], Rating.raters.to_a
-    end
-
-    def test_raters_include_members_of_a_group_with_a_rating_role
-      group = Group.create!(lastname: 'Developers')
-      group.users << @jsmith
-      grant_rating_role(group)
-
-      assert_equal [@jsmith], Rating.raters.to_a
-    end
-
-    def test_raters_exclude_admins_without_a_rating_role
-      assert_not_includes Rating.raters, @admin
-    end
-
-    def test_raters_exclude_locked_users
-      grant_rating_role(@jsmith)
-      @jsmith.lock!
-
-      assert_empty Rating.raters
-    end
-
-    def test_raters_are_all_active_users_when_non_members_may_rate
-      Role.non_member.add_permission!(:rate_technologies)
-
-      assert_includes Rating.raters, @jsmith
-      assert_includes Rating.raters, @admin
-      assert_not_includes Rating.raters, User.find_by(login: 'dlopper2')
     end
 
     def test_technologies_with_ratings_returns_empty_without_ratings

@@ -10,7 +10,7 @@ The rating view shows one technology at a time. Two clicks (one for "Can", one f
 
 ![Rating view](docs/screenshots/rating.png)
 
-The evaluation view shows every rating on a single chart. Two dropdowns filter the chart by person or by technology.
+The evaluation view shows every rating on a single chart. Two dropdowns filter the chart by technology or by person. A paginated table next to it lists the same ratings.
 
 ![Evaluation view](docs/screenshots/evaluation.png)
 
@@ -71,7 +71,7 @@ The starter list of technologies lives in [`db/seeds.rb`](db/seeds.rb). Edit the
 Open Redmine and click **Tech Radar** in the top menu.
 
 - **Rate:** Pick a "Can" level and a "Want" level for each technology. The rating saves on the second click and the next unrated technology shows up. Use **Skip** to come back to a technology later, or **Back** to revisit the previous one.
-- **Evaluation:** A scatter chart shows every rating. Without filters, each point is the average rating for one technology across everyone (the centroid). Filter by person to see one developer's ratings; filter by technology to see how every developer rated it.
+- **Evaluation:** A scatter chart shows every rating. Without filters, each point is the average rating for one technology across everyone (the centroid). Filter by technology to see how every developer rated it; filter by person to see one developer's ratings.
 - **Technologies** (requires *Manage technologies*): Add, rename, and delete technologies. Deleting a technology also deletes all of its ratings.
 
 ## Development

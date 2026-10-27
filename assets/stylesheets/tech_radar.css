@@ -64,11 +64,6 @@ body.controller-tech_radar.action-index #content {
   text-align: left;
 }
 
-.tech-radar-ratings-table tr.unrated td {
-  color: #888;
-  font-style: italic;
-}
-
 .tech-radar-card,
 .tech-radar-card-done {
   max-width: 720px;
